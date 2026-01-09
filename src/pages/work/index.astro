@@ -1,0 +1,116 @@
+---
+import '../../styles/global.css'
+import '../../styles/work.css'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getAllSeries } from '../../lib/queries'
+import { cld } from '../../lib/cloudinary'
+import { getCloudinaryImages } from '../../lib/cloudinary'
+
+const series = await getAllSeries()
+const favouriteImages = await getCloudinaryImages('favourites')
+---
+
+<BaseLayout title="Work · Mathis Heck">
+
+  <main>
+    <section class="portfolio-section">
+      <h2>Portfolio</h2>
+      <p class="intro-small">Ausgewählte Arbeiten</p>
+      
+      <div class="carousel-container">
+        <div class="carousel">
+          {favouriteImages.map((id: string) => (
+            <img src={cld(id, 'favourites')} alt="Portfolio Image" class="carousel-image" />
+          ))}
+        </div>
+        <button class="carousel-prev" aria-label="Previous">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+        <button class="carousel-next" aria-label="Next">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+        <div class="carousel-dots"></div>
+      </div>
+    </section>
+
+    <h1>Serien</h1>
+    <p class="intro">Fotografische Serien und Projekte.</p>
+
+    <div class="grid">
+      {series.map((s) => (
+        <a class="card" href={`/work/${s.slug}`}>
+          <div class="thumb">
+            <img src={cld(`${s.slug}_01`, s.slug)} alt={s.title} loading="lazy" />
+            <div class="overlay">
+              <div class="year">{s.year ?? '—'}</div>
+              <h2>{s.title}</h2>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </main>
+</BaseLayout>
+
+<script>
+  const setupCarousel = () => {
+    const carousel = document.querySelector('.carousel');
+    const images = document.querySelectorAll('.carousel-image');
+    const dotsContainer = document.querySelector('.carousel-dots');
+    const prevBtn = document.querySelector('.carousel-prev');
+    const nextBtn = document.querySelector('.carousel-next');
+    
+    if (!carousel || !images.length) return;
+
+    let currentIndex = 0;
+
+    // Dots erstellen
+    images.forEach((_, index) => {
+      const dot = document.createElement('div');
+      dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
+      dot.addEventListener('click', () => goToSlide(index));
+      dotsContainer?.appendChild(dot);
+    });
+
+    const dots = document.querySelectorAll('.carousel-dot');
+
+    const goToSlide = (index: number) => {
+      images.forEach(img => img.classList.remove('active'));
+      dots.forEach(dot => dot.classList.remove('active'));
+      
+      currentIndex = index;
+      images[index].classList.add('active');
+      dots[index].classList.add('active');
+    };
+
+    const nextSlide = () => {
+      goToSlide((currentIndex + 1) % images.length);
+    };
+
+    const prevSlide = () => {
+      goToSlide((currentIndex - 1 + images.length) % images.length);
+    };
+
+    // Event Listener
+    nextBtn?.addEventListener('click', nextSlide);
+    prevBtn?.addEventListener('click', prevSlide);
+
+    // Auto-Slide alle 5 Sekunden
+    setInterval(nextSlide, 5000);
+
+    // Initialisieren
+    images[0].classList.add('active');
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupCarousel);
+  } else {
+    setupCarousel();
+  }
+
+  document.addEventListener('astro:after-swap', setupCarousel);
+</script>

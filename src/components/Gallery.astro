@@ -1,0 +1,304 @@
+---
+import { cld } from '../lib/cloudinary'
+
+const { images, slug } = Astro.props
+---
+
+<section class="gallery" data-slug={slug}>
+  {images?.map((id: string, index: number) => (
+    <figure class="gallery-item">
+      <img
+        src={cld(id, slug, { width: 600, quality: 'auto', format: 'auto' })}
+        srcset={`
+          ${cld(id, slug, { width: 400, quality: 'auto', format: 'auto' })} 400w,
+          ${cld(id, slug, { width: 600, quality: 'auto', format: 'auto' })} 600w,
+          ${cld(id, slug, { width: 900, quality: 'auto', format: 'auto' })} 900w
+        `}
+        sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        loading="lazy"
+        decoding="async"
+        alt=""
+        data-index={index}
+        class="gallery-image"
+      />
+    </figure>
+  ))}
+</section>
+
+<div id="lightbox" class="lightbox">
+  <button class="lightbox-close" aria-label="Close">&times;</button>
+  <div class="lightbox-content">
+    <img id="lightbox-image" src="" alt="" />
+  </div>
+  <button class="lightbox-prev" aria-label="Previous">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+  <button class="lightbox-next" aria-label="Next">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .gallery {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+
+  .gallery-item {
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #0f1114;
+    cursor: pointer;
+  }
+
+  .gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    aspect-ratio: 4 / 3;
+    transition: transform 300ms ease;
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.03);
+  }
+
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 6, 7, 0.95);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+  }
+
+  .lightbox.active {
+    display: flex;
+  }
+
+  .lightbox-content {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 4rem;
+  }
+
+  #lightbox-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  .lightbox-close,
+  .lightbox-prev,
+  .lightbox-next {
+    position: absolute;
+    background: transparent;
+    border: none;
+    color: var(--fg);
+    cursor: pointer;
+    transition: color 140ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 48px;
+    height: 48px;
+  }
+
+  .lightbox-close:hover,
+  .lightbox-prev:hover,
+  .lightbox-next:hover {
+    color: var(--accent);
+  }
+
+  .lightbox-close {
+    top: 2rem;
+    right: 2rem;
+    z-index: 1001;
+    font-size: 2.4rem;
+    line-height: 1;
+  }
+
+  .lightbox-prev {
+    left: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox-next {
+    right: 2rem;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 768px) {
+    .gallery {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .lightbox-content {
+      padding: 2rem 1rem;
+    }
+
+    #lightbox-image {
+      max-width: 95vw;
+      max-height: 60vh;
+    }
+
+    .lightbox-close {
+      top: 1rem;
+      right: 1rem;
+      width: 40px;
+      height: 40px;
+    }
+  }
+</style>
+
+<script>
+  const setupGallery = () => {
+    const gallery = document.querySelector('.gallery') as HTMLElement | null
+    const lightbox = document.getElementById('lightbox') as HTMLElement | null
+    const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement | null
+    const lightboxClose = document.querySelector('.lightbox-close')
+    const lightboxPrev = document.querySelector('.lightbox-prev')
+    const lightboxNext = document.querySelector('.lightbox-next')
+    
+    let currentIndex = 0
+    let allImages: string[] = []
+    const slug = gallery?.dataset.slug || ''
+    const CLOUD_NAME = 'mathis-portfolio'
+    const VERSION = 'v1767950009'
+
+    // Sammle alle Bilder aus den data-index Attributen
+    const updateAllImages = () => {
+      allImages = Array.from(document.querySelectorAll('.gallery-image'))
+        .map((img, index) => {
+          const imageId = (img as HTMLImageElement).src.split('/').pop()?.split('?')[0] || ''
+          return imageId
+        })
+        .filter(Boolean)
+    }
+    
+    updateAllImages()
+
+    const cldUrl = (imageId: string, options?: any) => {
+      const transforms = []
+      if (options?.width) transforms.push(`w_${options.width}`)
+      transforms.push(options?.quality ? `q_${options.quality}` : 'q_auto')
+      transforms.push(options?.format ? `f_${options.format}` : 'f_auto')
+      const transformString = transforms.length > 0 ? `/${transforms.join('/')}` : ''
+      return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/${VERSION}/portfolio/${slug}/${imageId}`
+    }
+
+    const openLightbox = (index: number) => {
+      if (!lightbox || !lightboxImage) return
+      if (index < 0 || index >= allImages.length) return
+      
+      currentIndex = index
+      lightbox.classList.add('active')
+      const imageId = allImages[index]
+      lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
+      document.body.style.overflow = 'hidden'
+    }
+
+    const closeLightbox = () => {
+      if (!lightbox) return
+      lightbox.classList.remove('active')
+      document.body.style.overflow = ''
+    }
+
+    const showNext = () => {
+      if (allImages.length === 0) return
+      currentIndex = (currentIndex + 1) % allImages.length
+      if (lightboxImage) {
+        const imageId = allImages[currentIndex]
+        lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
+      }
+    }
+
+    const showPrev = () => {
+      if (allImages.length === 0) return
+      currentIndex = (currentIndex - 1 + allImages.length) % allImages.length
+      if (lightboxImage) {
+        const imageId = allImages[currentIndex]
+        lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
+      }
+    }
+
+    // Setup gallery image clicks
+    const setupImageClicks = () => {
+      document.querySelectorAll('.gallery-image').forEach((img) => {
+        const imgElement = img as HTMLImageElement
+        if (!imgElement.dataset.clickHandlerAttached) {
+          imgElement.addEventListener('click', () => {
+            const index = Array.from(document.querySelectorAll('.gallery-image')).indexOf(img)
+            openLightbox(index)
+          })
+          imgElement.dataset.clickHandlerAttached = 'true'
+        }
+      })
+    }
+    
+    setupImageClicks()
+
+    // Button-Klicks
+    lightboxClose?.addEventListener('click', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      closeLightbox()
+    })
+    
+    lightboxPrev?.addEventListener('click', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      showPrev()
+    })
+    
+    lightboxNext?.addEventListener('click', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      showNext()
+    })
+
+    // Hintergrund-Klick
+    lightbox?.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox()
+    })
+
+    // Keyboard-Navigation
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox || !lightbox.classList.contains('active')) return
+      if (e.key === 'Escape') closeLightbox()
+      if (e.key === 'ArrowRight') showNext()
+      if (e.key === 'ArrowLeft') showPrev()
+    })
+  }
+
+  // Beim Laden und bei Navigation
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupGallery)
+  } else {
+    setupGallery()
+  }
+
+  // Für Astro View Transitions
+  document.addEventListener('astro:after-swap', setupGallery)
+</script>

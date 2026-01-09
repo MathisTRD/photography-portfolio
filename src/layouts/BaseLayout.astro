@@ -1,0 +1,40 @@
+---
+import '../styles/global.css'
+import { ViewTransitions } from 'astro:transitions';
+const { title = 'Portfolio' } = Astro.props
+const currentPath = Astro.url.pathname
+---
+
+<!DOCTYPE html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <ViewTransitions />
+  </head>
+
+  <body>
+    <header class="nav">
+      <nav class="nav-links">
+        <a href="/work" class={currentPath === '/work' || currentPath.startsWith('/work/') ? 'active' : ''}>Work</a>
+        <a href="/" class={currentPath === '/' ? 'active' : ''}>Home</a>
+      </nav>
+    </header>
+
+    <slot />
+
+    <footer>
+      <p>&copy; 2026 Mathis Heck</p>
+    </footer>
+
+    <style>
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+  }
+</style>
+
+  </body>
+</html>
