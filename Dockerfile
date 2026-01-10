@@ -33,7 +33,6 @@ RUN echo 'server { \
         add_header Cache-Control "no-cache, no-store, must-revalidate"; \
         add_header Pragma "no-cache"; \
         add_header Expires "0"; \
-        try_files $uri $uri/ /index.html; \
     } \
     \
     # Cache static assets \
@@ -41,9 +40,9 @@ RUN echo 'server { \
         add_header Cache-Control "public, max-age=31536000, immutable"; \
     } \
     \
-    # Handle all other requests \
+    # Handle all requests - try file, then directory with index, then fallback to index.html \
     location / { \
-        try_files $uri $uri/ $uri.html /index.html; \
+        try_files $uri $uri.html $uri/ $uri/index.html /index.html; \
     } \
 }' > /etc/nginx/conf.d/default.conf
 
