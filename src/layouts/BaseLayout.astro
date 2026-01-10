@@ -28,6 +28,26 @@ const currentPath = Astro.url.pathname
       <p>&copy; 2026 Mathis Heck</p>
     </footer>
 
+    <script>
+      function updateActiveLink() {
+        const currentPath = window.location.pathname
+        const links = document.querySelectorAll('.nav-links a')
+        links.forEach(link => {
+          const href = link.getAttribute('href')
+          if (href === '/' && currentPath === '/') {
+            link.classList.add('active')
+          } else if (href !== '/' && (currentPath === href || currentPath.startsWith(href + '/'))) {
+            link.classList.add('active')
+          } else {
+            link.classList.remove('active')
+          }
+        })
+      }
+      
+      updateActiveLink()
+      document.addEventListener('astro:after-swap', updateActiveLink)
+    </script>
+
     <style>
   .container {
     max-width: 1400px;
