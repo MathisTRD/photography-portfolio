@@ -16,28 +16,43 @@ COPY . .
 RUN npm run build
 
 # Runtime Stage
-FROM node:18-alpine
+FROM nginx:alpine
 
-WORKDIR /app
+# Copy built static files to nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy package files for production dependencies
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
-
-# Copy built app from builder
-COPY --from=builder /app/dist ./dist
+# Create nginx configuration for SPA routing
+RUN echo 'server { \
+    listen 3000; \
+    server_name _; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    \
+    # Disable caching for HTML files \
+    location ~* \.html$ { \
+        add_header Cache-Control "no-cache, no-store, must-revalidate"; \
+        add_header Pragma "no-cache"; \
+        add_header Expires "0"; \
+        try_files $uri $uri/ /index.html; \
+    } \
+    \
+    # Cache static assets \
+    location ~* \.(css|js|jpg|jpeg|png|gif|ico|svg|woff|woff2|ttf|eot)$ { \
+        add_header Cache-Control "public, max-age=31536000, immutable"; \
+    } \
+    \
+    # Handle all other requests \
+    location / { \
+        try_files $uri $uri/ $uri.html /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 # Expose port
 EXPOSE 3000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+  CMD wget --quiet --tries=1 --spider http://localhost:3000 || exit 1
 
-# Set NODE_ENV to production
-ENV NODE_ENV=production
-ENV HOST=0.0.0.0
-ENV PORT=3000
-
-# Start the application
-CMD ["node", "./dist/server/entry.mjs"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
