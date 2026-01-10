@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css'
 import { ViewTransitions } from 'astro:transitions';
-const { title = 'Portfolio' } = Astro.props
+const { title = 'Portfolio', description = 'Fotografie Portfolio von Mathis Heck' } = Astro.props
 const currentPath = Astro.url.pathname
 ---
 
@@ -10,7 +10,21 @@ const currentPath = Astro.url.pathname
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Mathis Heck" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <title>{title}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <ViewTransitions />
   </head>
 

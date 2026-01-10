@@ -1,7 +1,5 @@
 ---
-title: street
-year: 2024
-description: Dokumentation der historischen und modernen Seiten Triers
+title: Street
+description: Schnappschüsse aus dem Stadtaltag
 ---
 
-Trier, eine der ältesten Städte Deutschlands, fasziniert mit ihrer Geschichte und Atmosphäre. Diese Serie hält die einzigartigen Momente fest - von antiken Ruinen bis zu lebendigen Straßenszenen.

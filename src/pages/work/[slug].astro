@@ -20,11 +20,9 @@ const images = await getCloudinaryImages(slug!)
 if (!series) {
   throw new Error(`Series not found for slug: ${slug}`)
 }
-
-console.log({ images })
 ---
 
-<BaseLayout title={series.title}>
+<BaseLayout title={`${series.title} · Mathis Heck`} description={series.description || `Fotoserie ${series.title} von Mathis Heck`}>
 
   <main>
     <div class="header">

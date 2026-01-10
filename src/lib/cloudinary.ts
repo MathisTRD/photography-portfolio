@@ -79,7 +79,6 @@ export async function getCloudinaryImages(slug: string): Promise<string[]> {
       .filter(Boolean)
       .sort()
 
-    console.log(`✓ Cloudinary loaded ${images.length} images from folder "${slug}"`, images)
     return images
   } catch (error) {
     console.error('Fehler beim Laden von Cloudinary Bildern:', error)

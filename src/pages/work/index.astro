@@ -10,7 +10,7 @@ const series = await getAllSeries()
 const favouriteImages = await getCloudinaryImages('favourites')
 ---
 
-<BaseLayout title="Work · Mathis Heck">
+<BaseLayout title="Work · Mathis Heck" description="Fotografische Serien und Projekte von Mathis Heck">
 
   <main>
     <section class="portfolio-section">
@@ -42,11 +42,11 @@ const favouriteImages = await getCloudinaryImages('favourites')
 
     <div class="grid">
       {series.map((s) => (
-        <a class="card" href={`/work/${s.slug}`}>
+          <a class="card" href={`/work/${s.slug}`}>
           <div class="thumb">
             <img src={cld(`${s.slug}_01`, s.slug)} alt={s.title} loading="lazy" />
             <div class="overlay">
-              <div class="year">{s.year ?? '—'}</div>
+              {s.year && <div class="year">{s.year}</div>}
               <h2>{s.title}</h2>
             </div>
           </div>
