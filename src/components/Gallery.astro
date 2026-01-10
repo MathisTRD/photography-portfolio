@@ -185,7 +185,6 @@ const { images, slug } = Astro.props
     let allImages: string[] = []
     const slug = gallery?.dataset.slug || ''
     const CLOUD_NAME = 'mathis-portfolio'
-    const VERSION = 'v1767950009'
 
     // Sammle alle Bilder aus den data-index Attributen
     const updateAllImages = () => {
@@ -205,7 +204,7 @@ const { images, slug } = Astro.props
       transforms.push(options?.quality ? `q_${options.quality}` : 'q_auto')
       transforms.push(options?.format ? `f_${options.format}` : 'f_auto')
       const transformString = transforms.length > 0 ? `/${transforms.join('/')}` : ''
-      return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/${VERSION}/portfolio/${slug}/${imageId}`
+      return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/portfolio/${slug}/${imageId}`
     }
 
     const openLightbox = (index: number) => {

@@ -1,5 +1,5 @@
 const CLOUD_NAME = import.meta.env.CLOUDINARY_CLOUD_NAME || 'mathis-portfolio'
-const VERSION = 'v1767950009'
+
 
 export interface ImageTransformOptions {
   width?: number
@@ -28,7 +28,7 @@ export function cld(id: string, slug: string, options?: ImageTransformOptions) {
   }
   
   const transformString = transforms.length > 0 ? `/${transforms.join('/')}` : ''
-  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/${VERSION}/portfolio/${slug}/${file}`
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/portfolio/${slug}/${file}`
 }
 
 export async function getCloudinaryImages(slug: string): Promise<string[]> {
@@ -79,6 +79,7 @@ export async function getCloudinaryImages(slug: string): Promise<string[]> {
       .filter(Boolean)
       .sort()
 
+    console.log(`✓ Cloudinary loaded ${images.length} images from folder "${slug}"`, images)
     return images
   } catch (error) {
     console.error('Fehler beim Laden von Cloudinary Bildern:', error)
