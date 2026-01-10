@@ -27,8 +27,8 @@ RUN rm /etc/nginx/conf.d/default.conf
 # Copy our nginx config
 COPY default.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 3000
-EXPOSE 3000
+# Expose port 80 (mapped to 3000 externally)
+EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
