@@ -21,15 +21,14 @@ FROM nginx:alpine
 # Copy built static files to nginx
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
+# Copy our nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port
-EXPOSE 80 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:80/index.html || exit 1
+# Expose port 80
+EXPOSE 80
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"]
