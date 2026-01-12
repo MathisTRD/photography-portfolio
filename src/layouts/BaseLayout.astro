@@ -1,12 +1,12 @@
 ---
 import '../styles/global.css'
 import { ViewTransitions } from 'astro:transitions';
-const { title = 'Portfolio', description = 'Fotografie Portfolio von Mathis Heck' } = Astro.props
+const { title = 'Portfolio', description = 'Photography Portfolio by Mathis Heck' } = Astro.props
 const currentPath = Astro.url.pathname
 ---
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -15,7 +15,7 @@ const currentPath = Astro.url.pathname
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="de_DE" />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
