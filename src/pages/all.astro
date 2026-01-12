@@ -89,6 +89,11 @@ const allImages = allImagesWithSlugs.flat()
       allImages.push({ id: imageId, slug: imageSlug, fullUrl, thumbUrl })
     })
 
+    function getThumbUrl(item: any): string {
+      // Return the thumb URL that was pre-generated at build time
+      return item.thumbUrl
+    }
+
     function openLightbox(index: number) {
       currentIndex = index
       const item = allImages[currentIndex]
@@ -322,7 +327,7 @@ const allImages = allImagesWithSlugs.flat()
     max-width: 80vw;
     max-height: 90vh;
     object-fit: contain;
-    border-radius: 4px;
+    border-radius: 8px;
     transition: opacity 300ms ease;
   }
 

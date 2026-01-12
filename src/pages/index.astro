@@ -32,7 +32,7 @@ const featured = series.slice(0, 3)
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <ViewTransitions />
   </head>
-  <body>
+  <body style="overflow: hidden; height: 100vh;">
     <section class="hero">
       <div class="hero-image">
         <img src={heroImage} alt="Landing Image" loading="eager" />
@@ -64,7 +64,7 @@ const featured = series.slice(0, 3)
           </a>
         </div>
 
-        <div>
+        <div style="text-align: center;">
           <a class="cta" href="/work">Portfolio</a>
         </div>
       </div>

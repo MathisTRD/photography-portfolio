@@ -23,7 +23,6 @@ const { images, slug } = Astro.props
   <button class="lightbox-close" aria-label="Close">&times;</button>
   <div class="lightbox-content">
     <div class="lightbox-image-wrapper">
-      <img id="lightbox-blur" src="" alt="" class="lightbox-blur" />
       <img id="lightbox-image" src="" alt="" />
       <div class="lightbox-loading"></div>
     </div>
@@ -104,18 +103,6 @@ const { images, slug } = Astro.props
     justify-content: center;
   }
 
-  .lightbox-blur {
-    position: absolute;
-    max-width: 80vw;
-    max-height: 90vh;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    border-radius: 8px;
-    filter: blur(20px);
-    opacity: 0.8;
-  }
-
   #lightbox-image {
     max-width: 80vw;
     max-height: 90vh;
@@ -163,8 +150,7 @@ const { images, slug } = Astro.props
       max-width: 95vw;
     }
 
-    #lightbox-image,
-    .lightbox-blur {
+    #lightbox-image {
       max-width: 95vw;
       max-height: 80vh;
     }
@@ -210,8 +196,7 @@ const { images, slug } = Astro.props
       right: 1rem;
     }
 
-    #lightbox-image,
-    .lightbox-blur {
+    #lightbox-image {
       max-width: 90vw;
       max-height: 70vh;
     }
@@ -294,7 +279,6 @@ const { images, slug } = Astro.props
     const lightboxClose = document.querySelector('.lightbox-close')
     const lightboxPrev = document.querySelector('.lightbox-prev')
     const lightboxNext = document.querySelector('.lightbox-next')
-    const lightboxBlur = document.getElementById('lightbox-blur') as HTMLImageElement
     const lightboxLoading = document.querySelector('.lightbox-loading') as HTMLElement
     
     let currentIndex = 0
@@ -322,10 +306,6 @@ const { images, slug } = Astro.props
       transforms.push('f_webp')
       const transformString = transforms.length > 0 ? `/${transforms.join('/')}` : ''
       return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/portfolio/${slug}/${imageId}`
-    }
-
-    const getBlurUrl = (imageId: string) => {
-      return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_50,h_50,q_auto,f_webp,e_blur:300/portfolio/${slug}/${imageId}`
     }
 
   // Preload images for smoother transitions
@@ -360,12 +340,6 @@ const { images, slug } = Astro.props
       currentIndex = index
       lightbox.classList.add('active')
       const imageId = allImages[index]
-      
-      // Show blur-up placeholder immediately
-      if (lightboxBlur) {
-        lightboxBlur.src = getBlurUrl(imageId)
-        lightboxBlur.style.display = 'block'
-      }
       
       // Load full resolution image
       lightboxImage.src = cldUrl(imageId, { width: 1400, quality: 'auto' })
@@ -403,12 +377,6 @@ const { images, slug } = Astro.props
         // Don't reload if already loading this image
         if (lightboxImage.src.includes(imageId)) return
         
-        // Show blur first
-        if (lightboxBlur) {
-          lightboxBlur.src = getBlurUrl(imageId)
-          lightboxBlur.style.display = 'block'
-        }
-        
         lightboxImage.src = cldUrl(imageId, { width: 1400, quality: 'auto' })
         lightboxImage.style.opacity = '0'
         lightboxLoading?.classList.add('active')
@@ -433,12 +401,6 @@ const { images, slug } = Astro.props
         
         // Don't reload if already loading this image
         if (lightboxImage.src.includes(imageId)) return
-        
-        // Show blur first
-        if (lightboxBlur) {
-          lightboxBlur.src = getBlurUrl(imageId)
-          lightboxBlur.style.display = 'block'
-        }
         
         lightboxImage.src = cldUrl(imageId, { width: 1400, quality: 'auto' })
         lightboxImage.style.opacity = '0'
