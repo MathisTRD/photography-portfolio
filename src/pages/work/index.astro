@@ -33,7 +33,7 @@ const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '
     <h1 style="text-align: center;">Series</h1>
     <p class="intro" style="text-align: center;">Photographic series and projects.</p>
 
-    <div class="grid" style="justify-items: center;">
+    <div class="grid">
       {series.map((s) => (
           <a class="card" href={`/work/${s.slug}`}>
           <div class="thumb">
@@ -57,7 +57,7 @@ const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '
 <style>
   .hero-image-container {
     width: 100%;
-    height: 200px;
+    height: 300px;
     margin: 0 auto;
     background: #0f1114;
     border-radius: 12px;
@@ -119,6 +119,15 @@ const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '
       height: 180px;
       border-radius: 8px;
     }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
   }
 
   @media (max-width: 480px) {
@@ -127,9 +136,35 @@ const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '
       border-radius: 8px;
     }
 
+    h1 {
+      font-size: 1.6rem;
+    }
+
+    .intro {
+      font-size: 0.95rem;
+    }
+
     .all-images-button {
       padding: 0.6rem 1.5rem;
       font-size: 0.9rem;
+    }
+
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      padding: 0 1rem;
+    }
+
+    .card {
+      border-radius: 12px;
+    }
+
+    .thumb {
+      aspect-ratio: 4 / 3;
+    }
+
+    h2 {
+      font-size: 1.1rem;
     }
   }
 </style>
