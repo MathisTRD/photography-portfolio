@@ -115,15 +115,13 @@ const allImages = allImagesWithSlugs.flat()
       }, 1000)
       
       // Load full resolution
-      const fullImg = new Image()
-      fullImg.onload = () => {
+      lightboxImage.onload = () => {
         clearTimeout(loaderTimeout)
-        lightboxImage.src = fullImg.src
         lightboxImage.style.opacity = '1'
         lightboxBlur.style.opacity = '0'
         loader.style.display = 'none'
       }
-      fullImg.src = item.fullUrl
+      lightboxImage.src = item.fullUrl
     }
 
     function closeLightbox() {
@@ -146,15 +144,13 @@ const allImages = allImagesWithSlugs.flat()
         loader.style.display = 'block'
       }, 1000)
       
-      const fullImg = new Image()
-      fullImg.onload = () => {
+      lightboxImage.onload = () => {
         clearTimeout(loaderTimeout)
-        lightboxImage.src = fullImg.src
         lightboxImage.style.opacity = '1'
         lightboxBlur.style.opacity = '0'
         loader.style.display = 'none'
       }
-      fullImg.src = item.fullUrl
+      lightboxImage.src = item.fullUrl
     }
 
     function showPrev() {
@@ -171,15 +167,13 @@ const allImages = allImagesWithSlugs.flat()
         loader.style.display = 'block'
       }, 1000)
       
-      const fullImg = new Image()
-      fullImg.onload = () => {
+      lightboxImage.onload = () => {
         clearTimeout(loaderTimeout)
-        lightboxImage.src = fullImg.src
         lightboxImage.style.opacity = '1'
         lightboxBlur.style.opacity = '0'
         loader.style.display = 'none'
       }
-      fullImg.src = item.fullUrl
+      lightboxImage.src = item.fullUrl
     }
 
     // Event listeners
