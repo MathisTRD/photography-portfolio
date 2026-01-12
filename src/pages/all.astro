@@ -95,6 +95,7 @@ const allImages = allImagesWithSlugs.flat()
       
       lightbox?.classList.add('active')
       document.body.style.overflow = 'hidden'
+      document.body.style.touchAction = 'none'
       
       // Show blur placeholder immediately
       lightboxBlur.src = item.thumbUrl
@@ -123,6 +124,7 @@ const allImages = allImagesWithSlugs.flat()
     function closeLightbox() {
       lightbox?.classList.remove('active')
       document.body.style.overflow = ''
+      document.body.style.touchAction = ''
     }
 
     function showNext() {
@@ -183,6 +185,13 @@ const allImages = allImagesWithSlugs.flat()
     closeBtn?.addEventListener('click', closeLightbox)
     prevBtn?.addEventListener('click', showPrev)
     nextBtn?.addEventListener('click', showNext)
+    
+    // Prevent scrolling when lightbox is open
+    document.addEventListener('wheel', (e) => {
+      if (lightbox?.classList.contains('active')) {
+        e.preventDefault()
+      }
+    }, { passive: false })
     
     // Keyboard navigation
     document.addEventListener('keydown', (e) => {
