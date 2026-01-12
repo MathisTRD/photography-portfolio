@@ -37,6 +37,8 @@ const allImages = allImagesWithSlugs.flat()
             data-index={index}
             data-id={item.id}
             data-slug={item.slug}
+            data-full-url={cld(item.id, item.slug, { width: 1400, quality: 'auto' })}
+            data-thumb-url={getCldThumb(item.id, item.slug)}
             class="gallery-image"
           />
         </figure>
@@ -67,8 +69,6 @@ const allImages = allImagesWithSlugs.flat()
 </BaseLayout>
 
 <script>
-  import { cld, getCldThumb } from '../lib/cloudinary'
-
   function setupGallery() {
     const galleryImages = document.querySelectorAll('.gallery-image')
     const lightbox = document.getElementById('lightbox')
@@ -79,12 +79,14 @@ const allImages = allImagesWithSlugs.flat()
     const nextBtn = document.querySelector('.lightbox-next')
     
     let currentIndex = 0
-    const allImages: Array<{ id: string, slug: string }> = []
+    const allImages: Array<{ id: string, slug: string, fullUrl: string, thumbUrl: string }> = []
     
     galleryImages.forEach((img) => {
       const imageId = img.getAttribute('data-id')!
       const imageSlug = img.getAttribute('data-slug')!
-      allImages.push({ id: imageId, slug: imageSlug })
+      const fullUrl = img.getAttribute('data-full-url')!
+      const thumbUrl = img.getAttribute('data-thumb-url')!
+      allImages.push({ id: imageId, slug: imageSlug, fullUrl, thumbUrl })
     })
 
     function openLightbox(index: number) {
@@ -95,7 +97,7 @@ const allImages = allImagesWithSlugs.flat()
       document.body.style.overflow = 'hidden'
       
       // Show blur placeholder immediately
-      lightboxBlur.src = getCldThumb(item.id, item.slug)
+      lightboxBlur.src = item.thumbUrl
       lightboxBlur.style.opacity = '1'
       lightboxImage.style.opacity = '0'
       
@@ -115,7 +117,7 @@ const allImages = allImagesWithSlugs.flat()
         lightboxBlur.style.opacity = '0'
         loader.style.display = 'none'
       }
-      fullImg.src = cld(item.id, item.slug, { width: 1400, quality: 'auto' })
+      fullImg.src = item.fullUrl
     }
 
     function closeLightbox() {
@@ -127,10 +129,7 @@ const allImages = allImagesWithSlugs.flat()
       currentIndex = (currentIndex + 1) % allImages.length
       const item = allImages[currentIndex]
       
-      // Check if already loaded
-      if (lightboxImage.src.includes(item.id)) return
-      
-      lightboxBlur.src = getCldThumb(item.id, item.slug)
+      lightboxBlur.src = item.thumbUrl
       lightboxBlur.style.opacity = '1'
       lightboxImage.style.opacity = '0'
       
@@ -148,17 +147,14 @@ const allImages = allImagesWithSlugs.flat()
         lightboxBlur.style.opacity = '0'
         loader.style.display = 'none'
       }
-      fullImg.src = cld(item.id, item.slug, { width: 1400, quality: 'auto' })
+      fullImg.src = item.fullUrl
     }
 
     function showPrev() {
       currentIndex = (currentIndex - 1 + allImages.length) % allImages.length
       const item = allImages[currentIndex]
       
-      // Check if already loaded
-      if (lightboxImage.src.includes(item.id)) return
-      
-      lightboxBlur.src = getCldThumb(item.id, item.slug)
+      lightboxBlur.src = item.thumbUrl
       lightboxBlur.style.opacity = '1'
       lightboxImage.style.opacity = '0'
       
@@ -176,7 +172,7 @@ const allImages = allImagesWithSlugs.flat()
         lightboxBlur.style.opacity = '0'
         loader.style.display = 'none'
       }
-      fullImg.src = cld(item.id, item.slug, { width: 1400, quality: 'auto' })
+      fullImg.src = item.fullUrl
     }
 
     // Event listeners
@@ -197,21 +193,28 @@ const allImages = allImagesWithSlugs.flat()
       if (e.key === 'ArrowRight') showNext()
     })
 
-    // Preload next/prev images
-    function preloadImage(index: number) {
-      if (index < 0 || index >= allImages.length) return
-      const item = allImages[index]
-      const img = new Image()
-      img.src = cld(item.id, item.slug, { width: 1400, quality: 'auto' })
+    // Preload only next/prev images when lightbox is open
+    function preloadAdjacentImages() {
+      const nextIndex = (currentIndex + 1) % allImages.length
+      const prevIndex = (currentIndex - 1 + allImages.length) % allImages.length
+      
+      const nextItem = allImages[nextIndex]
+      const prevItem = allImages[prevIndex]
+      
+      const nextImg = new Image()
+      nextImg.src = nextItem.fullUrl
+      
+      const prevImg = new Image()
+      prevImg.src = prevItem.fullUrl
     }
 
-    function preloadAllImages() {
-      allImages.forEach((item, index) => {
-        setTimeout(() => preloadImage(index), index * 150)
-      })
+    // Preload adjacent images after opening lightbox
+    const originalOpenLightbox = openLightbox
+    const wrappedOpenLightbox = (index: number) => {
+      originalOpenLightbox(index)
+      setTimeout(() => preloadAdjacentImages(), 500)
     }
-
-    preloadAllImages()
+    Object.assign(window, { openLightbox: wrappedOpenLightbox })
   }
 
   if (document.readyState === 'loading') {
