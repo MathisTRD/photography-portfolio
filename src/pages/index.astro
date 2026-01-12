@@ -5,25 +5,25 @@ import { cld } from '../lib/cloudinary'
 import { getAllSeries } from '../lib/queries'
 import { ViewTransitions } from 'astro:transitions';
 
-const heroImage = cld('landingpage_02', 'landingpage')
+const heroImage = cld('landingpage_01', 'landingpage', { quality: '83' })
 const series = await getAllSeries()
 const featured = series.slice(0, 3)
 ---
 
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="description" content="Fotografie Portfolio von Mathis Heck" />
+    <meta name="description" content="Photography Portfolio by Mathis Heck" />
     <meta name="author" content="Mathis Heck" />
     <meta property="og:title" content="Mathis Heck" />
-    <meta property="og:description" content="Fotografie Portfolio von Mathis Heck" />
+    <meta property="og:description" content="Photography Portfolio by Mathis Heck" />
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="de_DE" />
+    <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Mathis Heck" />
-    <meta name="twitter:description" content="Fotografie Portfolio von Mathis Heck" />
+    <meta name="twitter:description" content="Photography Portfolio by Mathis Heck" />
     <title>Mathis Heck</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.ico" />
@@ -46,7 +46,7 @@ const featured = series.slice(0, 3)
           Trier
         </div>
         <h1>Mathis Heck</h1>
-        <p class="lede">20 Jahre alt, Hobbyfotograf aus Trier. <br> Astrofotografie, Street, und alles, was mir visuell auffällt.</p>
+        <p class="lede">20 years old, hobby photographer from Trier. <br> Astrophotography, street, and everything that catches my eye.</p>
 
         <div class="tags">
           <a href="mailto:kontakt@mathisheck.de" title="Email" class="icon-link">
@@ -69,28 +69,5 @@ const featured = series.slice(0, 3)
         </div>
       </div>
     </section>
-
-    <main>
-      <div class="section-title">
-        <h2>Serien</h2>
-      </div>
-      <div class="cards">
-        {featured.map((s) => (
-          <a class="card" href={`/work/${s.slug}`}>
-            <div class="thumb">
-              <img src={cld(`${s.slug}_01`, s.slug)} alt={s.title} loading="lazy" />
-              <div class="overlay">
-                <div class="year">{s.year ?? '—'}</div>
-                <h3>{s.title}</h3>
-              </div>
-            </div>
-          </a>
-        ))}
-      </div>
-    </main>
-
-    <footer>
-      © {new Date().getFullYear()} Mathis Heck
-    </footer>
   </body>
 </html>

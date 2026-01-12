@@ -1,10 +1,25 @@
 const CLOUD_NAME = import.meta.env.CLOUDINARY_CLOUD_NAME || 'mathis-portfolio'
 
-
 export interface ImageTransformOptions {
   width?: number
   quality?: string
   format?: string
+}
+
+// Get responsive width based on connection speed
+export function getResponsiveWidth(baseWidth: number): number {
+  if (typeof navigator === 'undefined') return baseWidth
+  
+  const connection = (navigator as any).connection
+  if (!connection) return baseWidth
+  
+  const effectiveType = connection.effectiveType
+  // On slow connections, reduce image size
+  if (effectiveType === '4g') return baseWidth
+  if (effectiveType === '3g') return Math.floor(baseWidth * 0.75)
+  if (effectiveType === '2g') return Math.floor(baseWidth * 0.5)
+  
+  return baseWidth
 }
 
 export function cld(id: string, slug: string, options?: ImageTransformOptions) {
@@ -21,14 +36,18 @@ export function cld(id: string, slug: string, options?: ImageTransformOptions) {
   } else {
     transforms.push('q_auto') // Automatische Qualitätsoptimierung
   }
-  if (options?.format) {
-    transforms.push(`f_${options.format}`)
-  } else {
-    transforms.push('f_auto') // Automatisches Format (WebP, AVIF, etc.)
-  }
+  // Explizit WebP Format erzwingen für kleinere Dateigrößen
+  transforms.push('f_webp')
   
   const transformString = transforms.length > 0 ? `/${transforms.join('/')}` : ''
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/portfolio/${slug}/${file}`
+}
+
+// Generate blur-up thumbnail
+export function getCldThumb(id: string, slug: string): string {
+  const file = id.includes('.') ? id : `${id}.webp`
+  // Small, blurred placeholder
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_50,h_50,q_auto,f_webp,e_blur:300/portfolio/${slug}/${file}`
 }
 
 export async function getCloudinaryImages(slug: string): Promise<string[]> {

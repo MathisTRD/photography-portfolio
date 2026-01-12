@@ -4,47 +4,45 @@ import '../../styles/work.css'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { getAllSeries } from '../../lib/queries'
 import { cld } from '../../lib/cloudinary'
-import { getCloudinaryImages } from '../../lib/cloudinary'
 
 const series = await getAllSeries()
-const favouriteImages = await getCloudinaryImages('favourites')
+const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '75' })
 ---
 
-<BaseLayout title="Work · Mathis Heck" description="Fotografische Serien und Projekte von Mathis Heck">
+<BaseLayout title="Work · Mathis Heck" description="Photographic series and projects by Mathis Heck">
 
   <main>
     <section class="portfolio-section">
-      <h2>Portfolio</h2>
-      <p class="intro-small">Ausgewählte Arbeiten</p>
-      
-      <div class="carousel-container">
-        <div class="carousel">
-          {favouriteImages.map((id: string) => (
-            <img src={cld(id, 'favourites')} alt="Portfolio Image" class="carousel-image" />
-          ))}
-        </div>
-        <button class="carousel-prev" aria-label="Previous">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
-        </button>
-        <button class="carousel-next" aria-label="Next">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </button>
-        <div class="carousel-dots"></div>
+      <div class="hero-image-container">
+        <img 
+          src={heroImage} 
+          loading="eager"
+          decoding="async"
+          alt="Portfolio Hero" 
+          class="hero-portfolio-image" 
+        />
       </div>
     </section>
 
-    <h1>Serien</h1>
-    <p class="intro">Fotografische Serien und Projekte.</p>
+    <div style="text-align: center; margin: 3rem 0;">
+      <a href="/all" class="all-images-button">
+        View All Images
+      </a>
+    </div>
 
-    <div class="grid">
+    <h1 style="text-align: center;">Series</h1>
+    <p class="intro" style="text-align: center;">Photographic series and projects.</p>
+
+    <div class="grid" style="justify-items: center;">
       {series.map((s) => (
           <a class="card" href={`/work/${s.slug}`}>
           <div class="thumb">
-            <img src={cld(`${s.slug}_01`, s.slug)} alt={s.title} loading="lazy" />
+            <img 
+              src={cld(`${s.slug}_01`, s.slug, { width: 400, quality: "70" })} 
+              alt={s.title} 
+              loading="lazy"
+              decoding="async"
+            />
             <div class="overlay">
               {s.year && <div class="year">{s.year}</div>}
               <h2>{s.title}</h2>
@@ -56,61 +54,65 @@ const favouriteImages = await getCloudinaryImages('favourites')
   </main>
 </BaseLayout>
 
-<script>
-  const setupCarousel = () => {
-    const carousel = document.querySelector('.carousel');
-    const images = document.querySelectorAll('.carousel-image');
-    const dotsContainer = document.querySelector('.carousel-dots');
-    const prevBtn = document.querySelector('.carousel-prev');
-    const nextBtn = document.querySelector('.carousel-next');
-    
-    if (!carousel || !images.length) return;
-
-    let currentIndex = 0;
-
-    // Dots erstellen
-    images.forEach((_, index) => {
-      const dot = document.createElement('div');
-      dot.className = `carousel-dot ${index === 0 ? 'active' : ''}`;
-      dot.addEventListener('click', () => goToSlide(index));
-      dotsContainer?.appendChild(dot);
-    });
-
-    const dots = document.querySelectorAll('.carousel-dot');
-
-    const goToSlide = (index: number) => {
-      images.forEach(img => img.classList.remove('active'));
-      dots.forEach(dot => dot.classList.remove('active'));
-      
-      currentIndex = index;
-      images[index].classList.add('active');
-      dots[index].classList.add('active');
-    };
-
-    const nextSlide = () => {
-      goToSlide((currentIndex + 1) % images.length);
-    };
-
-    const prevSlide = () => {
-      goToSlide((currentIndex - 1 + images.length) % images.length);
-    };
-
-    // Event Listener
-    nextBtn?.addEventListener('click', nextSlide);
-    prevBtn?.addEventListener('click', prevSlide);
-
-    // Auto-Slide alle 5 Sekunden
-    setInterval(nextSlide, 5000);
-
-    // Initialisieren
-    images[0].classList.add('active');
-  };
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupCarousel);
-  } else {
-    setupCarousel();
+<style>
+  .hero-image-container {
+    width: 100%;
+    height: 300px;
+    margin: 0 auto;
+    background: #0f1114;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   }
 
-  document.addEventListener('astro:after-swap', setupCarousel);
-</script>
+  .hero-image-container::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5, 6, 7, 0) 0%, rgba(5, 6, 7, 0.3) 100%);
+    pointer-events: none;
+  }
+
+  .hero-portfolio-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: saturate(1.05) contrast(1.02);
+  }
+
+  .card .thumb img {
+    transition: transform 300ms ease;
+  }
+
+  .card:hover .thumb img {
+    transform: scale(1.05);
+  }
+
+  .all-images-button {
+    display: inline-block;
+    padding: 0.8rem 2rem;
+    background: rgba(245, 245, 247, 0.1);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--fg);
+    text-decoration: none;
+    font-size: 1rem;
+    transition: all 160ms ease;
+  }
+
+  .all-images-button:hover {
+    background: rgba(245, 245, 247, 0.15);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .portfolio-section {
+    margin-bottom: 2rem;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+</style>
+
+<script>
