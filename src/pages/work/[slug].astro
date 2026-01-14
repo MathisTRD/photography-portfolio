@@ -20,9 +20,6 @@ const images = await getCloudinaryImages(slug!)
 if (!series) {
   throw new Error(`Series not found for slug: ${slug}`)
 }
-
-// Build-time diagnostics: log image count so deploy logs show it
-console.log(`BUILD: series slug=${slug} -> images.length=${images.length}`)
 ---
 
 <BaseLayout title={`${series.title} · Mathis Heck`} description={series.description || `Photo series ${series.title} by Mathis Heck`}>
@@ -34,7 +31,6 @@ console.log(`BUILD: series slug=${slug} -> images.length=${images.length}`)
       {series.description && <p class="description">{series.description}</p>}
     </div>
 
-    {`<!-- image-count: ${images.length} -->`}
     <Gallery images={images} slug={series.slug} />
   </main>
 </BaseLayout>
