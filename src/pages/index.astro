@@ -31,8 +31,9 @@ const featured = series.slice(0, 3)
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <ViewTransitions />
+    <script defer src="https://analytics.mathisheck.de/script.js" data-website-id="7bc31e53-7da9-42db-8d5a-44546816e281"></script>
   </head>
-  <body style="overflow: hidden; height: 100vh;">
+  <body>
     <section class="hero">
       <div class="hero-image">
         <img src={heroImage} alt="Landing Image" loading="eager" />
@@ -64,10 +65,14 @@ const featured = series.slice(0, 3)
           </a>
         </div>
 
-        <div style="text-align: center;">
+        <div>
           <a class="cta" href="/work">Portfolio</a>
         </div>
       </div>
     </section>
+
+    <footer>
+      <p>&copy; 2026 Mathis Heck · <a href="/privacy">Privacy</a></p>
+    </footer>
   </body>
 </html>
