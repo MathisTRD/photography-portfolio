@@ -15,8 +15,9 @@ const allImagesWithSlugs = await Promise.all(
   })
 )
 
-// Flatten array
-const allImages = allImagesWithSlugs.flat()
+// Flatten array and shuffle randomly
+const flatImages = allImagesWithSlugs.flat()
+const allImages = flatImages.sort(() => Math.random() - 0.5)
 ---
 
 <BaseLayout title="All Images · Mathis Heck" description="All photographs by Mathis Heck">
