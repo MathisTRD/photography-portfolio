@@ -56,7 +56,7 @@ export async function getCloudinaryImages(slug: string): Promise<string[]> {
   const apiSecret = import.meta.env.CLOUDINARY_API_SECRET
 
   if (!cloudName || !apiKey || !apiSecret) {
-    console.warn('Cloudinary credentials missing - returning empty array')
+    console.warn('Cloudinary credentials missing - returning empty array for slug:', slug)
     return []
   }
 
@@ -100,7 +100,7 @@ export async function getCloudinaryImages(slug: string): Promise<string[]> {
 
     return images
   } catch (error) {
-    console.error('Fehler beim Laden von Cloudinary Bildern:', error)
+    console.error('Fehler beim Laden von Cloudinary Bildern for slug', slug, ':', error)
     return []
   }
 }

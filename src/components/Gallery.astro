@@ -4,19 +4,23 @@ import { cld, getCldThumb } from '../lib/cloudinary'
 const { images, slug } = Astro.props
 ---
 
-<section class="gallery" data-slug={slug}>
-  {images?.map((id: string, index: number) => (
-    <figure class="gallery-item">
-      <img
-        src={cld(id, slug, { width: 400, quality: 'auto' })}
-        loading="lazy"
-        decoding="async"
-        alt=""
-        data-index={index}
-        class="gallery-image"
-      />
-    </figure>
-  ))}
+<section class="gallery" data-slug={slug} data-count={images?.length ?? 0}>
+  {images && images.length > 0 ? (
+    images.map((id: string, index: number) => (
+      <figure class="gallery-item">
+        <img
+          src={cld(id, slug, { width: 400, quality: 'auto' })}
+          loading="lazy"
+          decoding="async"
+          alt=""
+          data-index={index}
+          class="gallery-image"
+        />
+      </figure>
+    ))
+  ) : (
+    <div class="no-images">No images found for this series.</div>
+  )}
 </section>
 
 <div id="lightbox" class="lightbox">
@@ -62,6 +66,14 @@ const { images, slug } = Astro.props
     display: block;
     aspect-ratio: 4 / 3;
     transition: transform 300ms ease;
+  }
+
+  .no-images {
+    padding: 6rem 1rem;
+    text-align: center;
+    color: var(--fg);
+    background: transparent;
+    min-height: 220px;
   }
 
   .gallery-item:hover img {
