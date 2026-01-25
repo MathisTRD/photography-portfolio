@@ -217,6 +217,7 @@ const { images, slug } = Astro.props
     let allImages: string[] = []
     const slug = gallery?.dataset.slug || ''
     const CLOUD_NAME = 'mathis-portfolio'
+    const preloadCache = new Map<string, Promise<string>>()
 
     // Sammle alle Bilder aus den data-index Attributen
     const updateAllImages = () => {
@@ -247,6 +248,44 @@ const { images, slug } = Astro.props
       if (lightboxOverlay) lightboxOverlay.style.display = 'none'
     }
 
+    // Preload ein Bild (Promise wird gecached, damit mehrfacher Aufruf nicht mehrfach lädt)
+    const preloadImage = (imageId: string) => {
+      if (preloadCache.has(imageId)) return preloadCache.get(imageId)!
+
+      const promise = new Promise<string>((resolve, reject) => {
+        const img = new Image()
+        img.onload = () => resolve(img.src)
+        img.onerror = reject
+        img.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
+      })
+
+      preloadCache.set(imageId, promise)
+      return promise
+    }
+
+    const loadIntoLightbox = async (imageId: string) => {
+      if (!lightboxImage) return
+      showLoader()
+      try {
+        const src = await preloadImage(imageId)
+        lightboxImage.src = src
+      } finally {
+        hideLoader()
+      }
+    }
+
+    const preloadWindow = (radius = 20) => {
+      if (allImages.length === 0) return
+      const total = allImages.length
+      const maxRadius = Math.min(radius, Math.floor(total / 2))
+      for (let step = 1; step <= maxRadius; step++) {
+        const nextIndex = (currentIndex + step) % total
+        const prevIndex = (currentIndex - step + total) % total
+        preloadImage(allImages[nextIndex]).catch(() => {})
+        preloadImage(allImages[prevIndex]).catch(() => {})
+      }
+    }
+
     const openLightbox = (index: number) => {
       if (!lightbox || !lightboxImage) return
       if (index < 0 || index >= allImages.length) return
@@ -254,10 +293,8 @@ const { images, slug } = Astro.props
       currentIndex = index
       lightbox.classList.add('active')
       const imageId = allImages[index]
-      showLoader()
-      lightboxImage.onload = () => hideLoader()
-      lightboxImage.onerror = () => hideLoader()
-      lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
+      loadIntoLightbox(imageId)
+      preloadWindow()
       document.body.style.overflow = 'hidden'
     }
 
@@ -271,25 +308,17 @@ const { images, slug } = Astro.props
     const showNext = () => {
       if (allImages.length === 0) return
       currentIndex = (currentIndex + 1) % allImages.length
-      if (lightboxImage) {
-        const imageId = allImages[currentIndex]
-        showLoader()
-        lightboxImage.onload = () => hideLoader()
-        lightboxImage.onerror = () => hideLoader()
-        lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
-      }
+      const imageId = allImages[currentIndex]
+      loadIntoLightbox(imageId)
+      preloadWindow()
     }
 
     const showPrev = () => {
       if (allImages.length === 0) return
       currentIndex = (currentIndex - 1 + allImages.length) % allImages.length
-      if (lightboxImage) {
-        const imageId = allImages[currentIndex]
-        showLoader()
-        lightboxImage.onload = () => hideLoader()
-        lightboxImage.onerror = () => hideLoader()
-        lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
-      }
+      const imageId = allImages[currentIndex]
+      loadIntoLightbox(imageId)
+      preloadWindow()
     }
 
     // Setup gallery image clicks
