@@ -128,11 +128,12 @@ const { images, slug } = Astro.props
     border-top-color: var(--fg);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
+    transform-origin: center;
     z-index: 2;
   }
 
   @keyframes spin {
-    to { transform: translate(-50%, -50%) rotate(360deg); }
+    to { transform: rotate(360deg); }
   }
 
   .lightbox-close,
