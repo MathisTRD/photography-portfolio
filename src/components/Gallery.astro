@@ -1,35 +1,34 @@
 ---
-import { cld, getCldThumb } from '../lib/cloudinary'
+import { cld } from '../lib/cloudinary'
 
 const { images, slug } = Astro.props
 ---
 
-<section class="gallery" data-slug={slug} data-count={images?.length ?? 0}>
-  {images && images.length > 0 ? (
-    images.map((id: string, index: number) => (
-      <figure class="gallery-item">
-        <img
-          src={cld(id, slug, { width: 400, quality: 'auto' })}
-          loading="lazy"
-          decoding="async"
-          alt=""
-          data-index={index}
-          class="gallery-image"
-        />
-      </figure>
-    ))
-  ) : (
-    <div class="no-images">No images found for this series.</div>
-  )}
+<section class="gallery" data-slug={slug}>
+  {images?.map((id: string, index: number) => (
+    <figure class="gallery-item">
+      <img
+        src={cld(id, slug, { width: 600, quality: 'auto', format: 'auto' })}
+        srcset={`
+          ${cld(id, slug, { width: 400, quality: 'auto', format: 'auto' })} 400w,
+          ${cld(id, slug, { width: 600, quality: 'auto', format: 'auto' })} 600w,
+          ${cld(id, slug, { width: 900, quality: 'auto', format: 'auto' })} 900w
+        `}
+        sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        loading="lazy"
+        decoding="async"
+        alt=""
+        data-index={index}
+        class="gallery-image"
+      />
+    </figure>
+  ))}
 </section>
 
 <div id="lightbox" class="lightbox">
   <button class="lightbox-close" aria-label="Close">&times;</button>
   <div class="lightbox-content">
-    <div class="lightbox-image-wrapper">
-      <img id="lightbox-image" src="" alt="" />
-      <div class="lightbox-loading"></div>
-    </div>
+    <img id="lightbox-image" src="" alt="" />
   </div>
   <button class="lightbox-prev" aria-label="Previous">
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -68,14 +67,6 @@ const { images, slug } = Astro.props
     transition: transform 300ms ease;
   }
 
-  .no-images {
-    padding: 6rem 1rem;
-    text-align: center;
-    color: var(--fg);
-    background: transparent;
-    min-height: 220px;
-  }
-
   .gallery-item:hover img {
     transform: scale(1.03);
   }
@@ -103,115 +94,15 @@ const { images, slug } = Astro.props
     width: 100%;
     height: 100%;
     padding: 4rem;
-    overflow: hidden;
-  }
-
-  .lightbox-image-wrapper {
-    position: relative;
-    max-width: calc(100% - 120px);
-    max-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
   #lightbox-image {
-    max-width: 80vw;
+    max-width: 90vw;
     max-height: 90vh;
     width: auto;
     height: auto;
     object-fit: contain;
     border-radius: 8px;
-    transition: opacity 200ms ease;
-    position: relative;
-    z-index: 1;
-  }
-
-  .lightbox-loading {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255, 255, 255, 0.2);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    opacity: 0;
-    transition: opacity 200ms ease;
-    z-index: 2;
-  }
-
-  .lightbox-loading.active {
-    opacity: 1;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  @media (max-width: 1024px) {
-    .gallery {
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-    }
-
-    .lightbox-content {
-      padding: 2rem 1rem;
-    }
-
-    .lightbox-image-wrapper {
-      max-width: 95vw;
-    }
-
-    #lightbox-image {
-      max-width: 95vw;
-      max-height: 80vh;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .gallery {
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 0.8rem;
-    }
-
-    .gallery-item img {
-      aspect-ratio: 3 / 2;
-    }
-
-    .lightbox-prev,
-    .lightbox-next {
-      width: 36px;
-      height: 36px;
-      font-size: 0.8rem;
-    }
-
-    .lightbox-prev {
-      left: 0.5rem;
-    }
-
-    .lightbox-next {
-      right: 0.5rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .gallery {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 0.5rem;
-    }
-
-    .lightbox-close {
-      width: 36px;
-      height: 36px;
-      font-size: 1.5rem;
-      top: 1rem;
-      right: 1rem;
-    }
-
-    #lightbox-image {
-      max-width: 90vw;
-      max-height: 70vh;
-    }
   }
 
   .lightbox-close,
@@ -249,14 +140,12 @@ const { images, slug } = Astro.props
     left: 2rem;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 1002;
   }
 
   .lightbox-next {
     right: 2rem;
     top: 50%;
     transform: translateY(-50%);
-    z-index: 1002;
   }
 
   @media (max-width: 768px) {
@@ -291,18 +180,16 @@ const { images, slug } = Astro.props
     const lightboxClose = document.querySelector('.lightbox-close')
     const lightboxPrev = document.querySelector('.lightbox-prev')
     const lightboxNext = document.querySelector('.lightbox-next')
-    const lightboxLoading = document.querySelector('.lightbox-loading') as HTMLElement
     
     let currentIndex = 0
     let allImages: string[] = []
     const slug = gallery?.dataset.slug || ''
     const CLOUD_NAME = 'mathis-portfolio'
-    const imageCache = new Map<string, string>()
 
     // Sammle alle Bilder aus den data-index Attributen
     const updateAllImages = () => {
       allImages = Array.from(document.querySelectorAll('.gallery-image'))
-        .map((img, index) => {
+        .map((img) => {
           const imageId = (img as HTMLImageElement).src.split('/').pop()?.split('?')[0] || ''
           return imageId
         })
@@ -315,34 +202,9 @@ const { images, slug } = Astro.props
       const transforms = []
       if (options?.width) transforms.push(`w_${options.width}`)
       transforms.push(options?.quality ? `q_${options.quality}` : 'q_auto')
-      transforms.push('f_webp')
+      transforms.push(options?.format ? `f_${options.format}` : 'f_auto')
       const transformString = transforms.length > 0 ? `/${transforms.join('/')}` : ''
       return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/portfolio/${slug}/${imageId}`
-    }
-
-  // Preload images for smoother transitions
-    const preloadImage = (imageId: string) => {
-      if (imageCache.has(imageId)) return
-      const img = new Image()
-      img.src = cldUrl(imageId, { width: 1400, quality: 'auto' })
-      img.onload = () => {
-        imageCache.set(imageId, img.src)
-      }
-      img.onerror = () => {
-        // Still mark as cached even on error to avoid retrying
-        imageCache.set(imageId, '')
-      }
-    }
-
-    // Preload all images in the background
-    const preloadAllImages = () => {
-      allImages.forEach((imageId, index) => {
-        // Don't preload too many at once to avoid overwhelming the connection
-        // Skip if already being used in gallery
-        setTimeout(() => {
-          preloadImage(imageId)
-        }, index * 150) // Stagger preloads by 150ms (faster)
-      })
     }
 
     const openLightbox = (index: number) => {
@@ -352,26 +214,8 @@ const { images, slug } = Astro.props
       currentIndex = index
       lightbox.classList.add('active')
       const imageId = allImages[index]
-      
-      // Load full resolution image
-      lightboxImage.src = cldUrl(imageId, { width: 1400, quality: 'auto' })
-      lightboxImage.style.opacity = '0'
-      lightboxLoading?.classList.add('active')
-      
-      lightboxImage.onload = () => {
-        lightboxImage.style.opacity = '1'
-        lightboxLoading?.classList.remove('active')
-      }
-      
+      lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
       document.body.style.overflow = 'hidden'
-      
-      // Preload next and prev images
-      if (index + 1 < allImages.length) {
-        preloadImage(allImages[index + 1])
-      }
-      if (index - 1 >= 0) {
-        preloadImage(allImages[index - 1])
-      }
     }
 
     const closeLightbox = () => {
@@ -385,23 +229,7 @@ const { images, slug } = Astro.props
       currentIndex = (currentIndex + 1) % allImages.length
       if (lightboxImage) {
         const imageId = allImages[currentIndex]
-        
-        // Don't reload if already loading this image
-        if (lightboxImage.src.includes(imageId)) return
-        
-        lightboxImage.src = cldUrl(imageId, { width: 1400, quality: 'auto' })
-        lightboxImage.style.opacity = '0'
-        lightboxLoading?.classList.add('active')
-        
-        lightboxImage.onload = () => {
-          lightboxImage.style.opacity = '1'
-          lightboxLoading?.classList.remove('active')
-        }
-        
-        // Preload next image
-        if (currentIndex + 1 < allImages.length) {
-          preloadImage(allImages[currentIndex + 1])
-        }
+        lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
       }
     }
 
@@ -410,23 +238,7 @@ const { images, slug } = Astro.props
       currentIndex = (currentIndex - 1 + allImages.length) % allImages.length
       if (lightboxImage) {
         const imageId = allImages[currentIndex]
-        
-        // Don't reload if already loading this image
-        if (lightboxImage.src.includes(imageId)) return
-        
-        lightboxImage.src = cldUrl(imageId, { width: 1400, quality: 'auto' })
-        lightboxImage.style.opacity = '0'
-        lightboxLoading?.classList.add('active')
-        
-        lightboxImage.onload = () => {
-          lightboxImage.style.opacity = '1'
-          lightboxLoading?.classList.remove('active')
-        }
-        
-        // Preload previous image
-        if (currentIndex - 1 >= 0) {
-          preloadImage(allImages[currentIndex - 1])
-        }
+        lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
       }
     }
 
@@ -444,7 +256,30 @@ const { images, slug } = Astro.props
       })
     }
     
+    // Entfernt defekte Bilder aus der Galerie, damit fehlende IDs keinen leeren Slot hinterlassen
+    const removeBrokenImage = (imgElement: HTMLImageElement) => {
+      const figure = imgElement.closest('.gallery-item')
+      figure?.remove()
+      updateAllImages()
+      setupImageClicks()
+      if (lightbox?.classList.contains('active') && allImages.length === 0) {
+        closeLightbox()
+      }
+    }
+
+    // Fehlerhafte Bilder direkt aus dem DOM nehmen
+    const setupErrorHandling = () => {
+      document.querySelectorAll('.gallery-image').forEach((img) => {
+        const imgElement = img as HTMLImageElement
+        if (!imgElement.dataset.errorHandlerAttached) {
+          imgElement.addEventListener('error', () => removeBrokenImage(imgElement))
+          imgElement.dataset.errorHandlerAttached = 'true'
+        }
+      })
+    }
+    
     setupImageClicks()
+    setupErrorHandling()
 
     // Button-Klicks
     lightboxClose?.addEventListener('click', (e) => {
@@ -477,9 +312,6 @@ const { images, slug } = Astro.props
       if (e.key === 'ArrowRight') showNext()
       if (e.key === 'ArrowLeft') showPrev()
     })
-    
-    // Start preloading images immediately for faster loading
-    preloadAllImages()
   }
 
   // Beim Laden und bei Navigation
