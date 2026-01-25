@@ -28,6 +28,9 @@ const { images, slug } = Astro.props
 <div id="lightbox" class="lightbox">
   <button class="lightbox-close" aria-label="Close">&times;</button>
   <div class="lightbox-content">
+    <div class="lightbox-loader-overlay">
+      <div class="lightbox-loading"></div>
+    </div>
     <img id="lightbox-image" src="" alt="" />
   </div>
   <button class="lightbox-prev" aria-label="Previous">
@@ -103,6 +106,33 @@ const { images, slug } = Astro.props
     height: auto;
     object-fit: contain;
     border-radius: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .lightbox-loader-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+  }
+
+  .lightbox-loading {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(245, 245, 247, 0.3);
+    border-top-color: var(--fg);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    z-index: 2;
+  }
+
+  @keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
   }
 
   .lightbox-close,
@@ -177,6 +207,8 @@ const { images, slug } = Astro.props
     const gallery = document.querySelector('.gallery') as HTMLElement | null
     const lightbox = document.getElementById('lightbox') as HTMLElement | null
     const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement | null
+    const lightboxOverlay = document.querySelector('.lightbox-loader-overlay') as HTMLElement | null
+    const lightboxLoader = document.querySelector('.lightbox-loading') as HTMLElement | null
     const lightboxClose = document.querySelector('.lightbox-close')
     const lightboxPrev = document.querySelector('.lightbox-prev')
     const lightboxNext = document.querySelector('.lightbox-next')
@@ -207,6 +239,14 @@ const { images, slug } = Astro.props
       return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload${transformString}/portfolio/${slug}/${imageId}`
     }
 
+    const showLoader = () => {
+      if (lightboxOverlay) lightboxOverlay.style.display = 'flex'
+    }
+
+    const hideLoader = () => {
+      if (lightboxOverlay) lightboxOverlay.style.display = 'none'
+    }
+
     const openLightbox = (index: number) => {
       if (!lightbox || !lightboxImage) return
       if (index < 0 || index >= allImages.length) return
@@ -214,6 +254,9 @@ const { images, slug } = Astro.props
       currentIndex = index
       lightbox.classList.add('active')
       const imageId = allImages[index]
+      showLoader()
+      lightboxImage.onload = () => hideLoader()
+      lightboxImage.onerror = () => hideLoader()
       lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
       document.body.style.overflow = 'hidden'
     }
@@ -222,6 +265,7 @@ const { images, slug } = Astro.props
       if (!lightbox) return
       lightbox.classList.remove('active')
       document.body.style.overflow = ''
+      hideLoader()
     }
 
     const showNext = () => {
@@ -229,6 +273,9 @@ const { images, slug } = Astro.props
       currentIndex = (currentIndex + 1) % allImages.length
       if (lightboxImage) {
         const imageId = allImages[currentIndex]
+        showLoader()
+        lightboxImage.onload = () => hideLoader()
+        lightboxImage.onerror = () => hideLoader()
         lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
       }
     }
@@ -238,6 +285,9 @@ const { images, slug } = Astro.props
       currentIndex = (currentIndex - 1 + allImages.length) % allImages.length
       if (lightboxImage) {
         const imageId = allImages[currentIndex]
+        showLoader()
+        lightboxImage.onload = () => hideLoader()
+        lightboxImage.onerror = () => hideLoader()
         lightboxImage.src = cldUrl(imageId, { width: 1800, quality: 'auto', format: 'auto' })
       }
     }
