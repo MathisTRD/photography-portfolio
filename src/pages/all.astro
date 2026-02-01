@@ -114,7 +114,6 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       
       lightbox?.classList.add('active')
       document.body.style.overflow = 'hidden'
-      document.body.style.touchAction = 'none'
       
       // Show blur placeholder immediately
       lightboxBlur.src = item.thumbUrl
@@ -141,7 +140,6 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
     function closeLightbox() {
       lightbox?.classList.remove('active')
       document.body.style.overflow = ''
-      document.body.style.touchAction = ''
     }
 
     function showNext() {
@@ -190,21 +188,22 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       lightboxImage.src = item.fullUrl
     }
 
-    // Basic touch swipe support for mobile
+    // Simple touch swipe support for mobile (on the image itself)
     let touchStartX: number | null = null
     let touchStartY: number | null = null
 
-    const swipeThreshold = 40 // min horizontal movement in px
-    const maxVerticalOffset = 60 // ignore mostly vertical swipes
+    const swipeThreshold = 20 // min horizontal movement in px
+    const maxVerticalOffset = 80 // ignore mostly vertical swipes
 
-    lightbox?.addEventListener('touchstart', (e) => {
+    lightboxImage?.addEventListener('touchstart', (e) => {
       const touch = e.touches[0]
       touchStartX = touch.clientX
       touchStartY = touch.clientY
     })
 
-    lightbox?.addEventListener('touchend', (e) => {
+    lightboxImage?.addEventListener('touchend', (e) => {
       if (touchStartX === null || touchStartY === null) return
+
       const touch = e.changedTouches[0]
       const dx = touch.clientX - touchStartX
       const dy = touch.clientY - touchStartY
@@ -221,6 +220,39 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       touchStartX = null
       touchStartY = null
     })
+
+    // Desktop: click left/right side of image for prev/next
+    if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+      lightboxImage?.addEventListener('click', (e: MouseEvent) => {
+        const rect = lightboxImage.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        if (x < rect.width / 2) {
+          showPrev()
+        } else {
+          showNext()
+        }
+      })
+
+      // Desktop: click regions around the image
+      lightbox?.addEventListener('click', (e: MouseEvent) => {
+        if (!lightboxImage) return
+        const rect = lightboxImage.getBoundingClientRect()
+        const { clientX, clientY } = e
+
+        // If click is above or below the image, close lightbox
+        if (clientY < rect.top || clientY > rect.bottom) {
+          closeLightbox()
+          return
+        }
+
+        // If click is left or right outside the image, go prev/next
+        if (clientX < rect.left) {
+          showPrev()
+        } else if (clientX > rect.right) {
+          showNext()
+        }
+      })
+    }
 
     // Event listeners
     galleryImages.forEach((img, index) => {
@@ -371,6 +403,7 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
     align-items: center;
     justify-content: center;
     overflow: hidden;
+    cursor: pointer;
   }
 
   #lightbox-image,
@@ -448,17 +481,9 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       gap: 0.5rem;
     }
 
+    /* On mobile we hide the desktop arrow buttons, swipe is enough */
     .lightbox-arrow {
-      width: 40px;
-      height: 40px;
-    }
-
-    .lightbox-prev {
-      left: 1rem;
-    }
-
-    .lightbox-next {
-      right: 1rem;
+      display: none;
     }
   }
 </style>

@@ -322,6 +322,73 @@ const { images, slug } = Astro.props
       preloadWindow()
     }
 
+    // Simple touch swipe support for mobile (on the lightbox image)
+    let touchStartX: number | null = null
+    let touchStartY: number | null = null
+
+    const swipeThreshold = 20 // min horizontal movement in px
+    const maxVerticalOffset = 80 // ignore mostly vertical swipes
+
+    lightboxImage?.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0]
+      touchStartX = touch.clientX
+      touchStartY = touch.clientY
+    })
+
+    lightboxImage?.addEventListener('touchend', (e) => {
+      if (touchStartX === null || touchStartY === null) return
+
+      const touch = e.changedTouches[0]
+      const dx = touch.clientX - touchStartX
+      const dy = touch.clientY - touchStartY
+
+      // Only react to mostly horizontal swipes
+      if (Math.abs(dx) > swipeThreshold && Math.abs(dy) < maxVerticalOffset) {
+        if (dx < 0) {
+          showNext()
+        } else {
+          showPrev()
+        }
+      }
+
+      touchStartX = null
+      touchStartY = null
+    })
+
+    // Desktop: click left/right side of image for prev/next
+    if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+      lightboxImage?.addEventListener('click', (e: MouseEvent) => {
+        if (!lightboxImage) return
+        const rect = lightboxImage.getBoundingClientRect()
+        const x = e.clientX - rect.left
+        if (x < rect.width / 2) {
+          showPrev()
+        } else {
+          showNext()
+        }
+      })
+
+      // Desktop: click regions around the image
+      lightbox?.addEventListener('click', (e: MouseEvent) => {
+        if (!lightboxImage) return
+        const rect = lightboxImage.getBoundingClientRect()
+        const { clientX, clientY } = e
+
+        // If click is above or below the image, close lightbox
+        if (clientY < rect.top || clientY > rect.bottom) {
+          closeLightbox()
+          return
+        }
+
+        // If click is left or right outside the image, go prev/next
+        if (clientX < rect.left) {
+          showPrev()
+        } else if (clientX > rect.right) {
+          showNext()
+        }
+      })
+    }
+
     // Setup gallery image clicks
     const setupImageClicks = () => {
       document.querySelectorAll('.gallery-image').forEach((img) => {
@@ -378,11 +445,6 @@ const { images, slug } = Astro.props
       e.preventDefault()
       e.stopPropagation()
       showNext()
-    })
-
-    // Hintergrund-Klick
-    lightbox?.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox()
     })
 
     // Keyboard-Navigation
