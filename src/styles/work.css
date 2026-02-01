@@ -282,6 +282,11 @@ h1.detail-title {
   text-align: center;
 }
 
+/* Hide detail title on the all-images page, which uses the special gallery[data-all="true"] section */
+main:has(> section.gallery[data-all="true"]) h1.detail-title {
+  display: none !important;
+}
+
 .meta {
   display: flex;
   gap: 1.2rem;
@@ -310,7 +315,8 @@ h1.detail-title {
   }
 
   h1.detail-title {
-    font-size: 1.8rem;
+    font-size: 1.7rem;
+    line-height: 1.25;
   }
 
   .grid {
@@ -321,5 +327,15 @@ h1.detail-title {
   .home-link {
     text-align: center;
     width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  h1.detail-title {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 0.95rem;
   }
 }

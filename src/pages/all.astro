@@ -15,20 +15,22 @@ const allImagesWithSlugs = await Promise.all(
   })
 )
 
-// Flatten array and shuffle randomly
-const flatImages = allImagesWithSlugs.flat()
-const allImages = flatImages.sort(() => Math.random() - 0.5)
+// Flatten array
+const allImages = allImagesWithSlugs.flat()
+
+// Shuffle all images so series are mixed
+const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
 ---
 
 <BaseLayout title="All Images · Mathis Heck" description="All photographs by Mathis Heck">
   <main>
     <div class="header">
       <a href="/" class="home-link">Home</a>
-      <h1 class="detail-title">All Images</h1>
+
     </div>
 
     <section class="gallery" data-all="true">
-      {allImages.map((item, index) => (
+      {shuffledAllImages.map((item, index) => (
         <figure class="gallery-item">
           <img
             src={cld(item.id, item.slug, { width: 400, quality: 'auto' })}
@@ -70,7 +72,18 @@ const allImages = flatImages.sort(() => Math.random() - 0.5)
 </BaseLayout>
 
 <script>
+  function removeAllImagesHeading() {
+    const headings = Array.from(document.querySelectorAll('h1')) as HTMLHeadingElement[]
+    headings.forEach((h) => {
+      if (h.textContent?.trim() === 'All Images') {
+        h.remove()
+      }
+    })
+  }
+
   function setupGallery() {
+    removeAllImagesHeading()
+
     const galleryImages = document.querySelectorAll('.gallery-image')
     const lightbox = document.getElementById('lightbox')
     const lightboxImage = document.getElementById('lightbox-image') as HTMLImageElement
@@ -227,15 +240,26 @@ const allImages = flatImages.sort(() => Math.random() - 0.5)
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', setupGallery)
+    document.addEventListener('DOMContentLoaded', () => {
+      removeAllImagesHeading()
+      setupGallery()
+    })
   } else {
+    removeAllImagesHeading()
     setupGallery()
   }
 
-  document.addEventListener('astro:after-swap', setupGallery)
+  document.addEventListener('astro:after-swap', () => {
+    removeAllImagesHeading()
+    setupGallery()
+  })
 </script>
 
-<style>
+<style is:global>
+  h1.detail-title {
+    display: none !important;
+  }
+
   .gallery {
     display: grid;
     gap: 1rem;

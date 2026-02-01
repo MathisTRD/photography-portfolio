@@ -35,9 +35,13 @@ if (!series) {
       <a href="/" class="home-link">Home</a>
       <div style="margin-top: 2rem;">
         <div class="series-nav">
-          <a class="series-nav-link" href="/all" aria-label="All images" title="All images">
+          <a
+            class="series-nav-link"
+            href={`/work/${prevSeries?.slug}`}
+            aria-label="Previous series"
+            title="Previous series"
+          >
             <span aria-hidden="true">←</span>
-            <span class="series-nav-text">All images</span>
           </a>
           <div class="series-header-content">
             <h1 class="detail-title">{series.title}</h1>
@@ -50,7 +54,6 @@ if (!series) {
             aria-label="Next series"
             title="Next series"
           >
-            <span class="series-nav-text">Next series</span>
             <span aria-hidden="true">→</span>
           </a>
         </div>

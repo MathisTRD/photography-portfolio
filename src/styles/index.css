@@ -73,7 +73,7 @@
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-size: 0.78rem;
-  margin-bottom: 1rem;
+  margin: 0.4rem 0 1.2rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -99,6 +99,7 @@ h1 {
   max-width: 46ch;
   line-height: 1.65;
   font-size: 1rem;
+  margin-bottom: 0.1rem;
   background: linear-gradient(90deg, #ffffff 0%, #f5f5f7 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -108,9 +109,27 @@ h1 {
 .tags {
   display: flex;
   gap: 1.5rem;
-  margin: 1.5rem 0 2rem;
+  margin: 1.5rem 0 0.9rem;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.social-actions {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: max-content;
+}
+
+.social-actions .tags {
+  width: 100%;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.social-actions .cta {
+  width: 100%;
+  justify-content: center;
 }
 
 .icon-link {
@@ -170,7 +189,7 @@ h1 {
 }
 
 main {
-  padding: 5rem 2rem 6rem;
+  padding: 4rem 2rem 5rem;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -264,6 +283,10 @@ main {
     justify-content: center;
   }
 
+  .social-actions {
+    margin: 0 auto;
+  }
+
   .cta {
     margin: 0 auto;
   }
@@ -345,5 +368,18 @@ main {
   .cta {
     padding: 0.8rem 1.2rem;
     font-size: 0.95rem;
+  }
+
+  main {
+    padding: 2.5rem 1.5rem 3.5rem;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  /* Reduce big gap before the "Series" heading on mobile */
+  main > h1 {
+    margin-top: 1.5rem !important;
   }
 }

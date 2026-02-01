@@ -27,6 +27,12 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
     <meta name="twitter:title" content="Mathis Heck" />
     <meta name="twitter:description" content="Photography Portfolio by Mathis Heck" />
     <title>Mathis Heck</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;1,14..32,300&display=swap"
+      rel="stylesheet"
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" href="/favicon.ico" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
@@ -42,33 +48,35 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
       </div>
       <div class="hero-content">
         <div class="hero-copy">
-          <div class="eyebrow">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="location-icon">
-              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-              <circle cx="12" cy="10" r="3"></circle>
-            </svg>
-            Trier
-          </div>
-          <h1>Mathis Heck</h1>
-          <p class="lede">20 years old, hobby photographer from Trier. <br> Astrophotography, street, and everything that catches my eye.</p>
+          <h1 class="hero-name">Mathis Heck</h1>
+          <p class="lede">20 years old, hobby photographer,
+          <br> Astrophotography, street, and everything that catches my eye.</p>
 
-          <div class="tags">
-            <a href="mailto:kontakt@mathisheck.de" title="Email" class="icon-link">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <polyline points="22,6 12,13 2,6"></polyline>
-              </svg>
-            </a>
-            <a href="https://instagram.com/mattyy.tr" target="_blank" title="Instagram" class="icon-link">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                <circle cx="17.5" cy="6.5" r="1.5"></circle>
-              </svg>
-            </a>
-          </div>
-
-          <div>
+          <div class="social-actions">
+            <div class="tags">
+              <a href="mailto:kontakt@mathisheck.de" title="Email" class="icon-link">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </a>
+              <a href="https://www.mattytr.dev/" target="_blank" rel="noreferrer" title="GitHub" class="icon-link">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="8" cy="8" r="2"></circle>
+                  <circle cx="16" cy="6" r="2"></circle>
+                  <circle cx="18" cy="14" r="2"></circle>
+                  <path d="M9.8 8.9 14.2 7.1"></path>
+                  <path d="M16.4 7.4 17.6 12"></path>
+                </svg>
+              </a>
+              <a href="https://instagram.com/mattyy.tr" target="_blank" title="Instagram" class="icon-link">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <circle cx="17.5" cy="6.5" r="1.5"></circle>
+                </svg>
+              </a>
+            </div>
             <a class="cta" href="/all">All images</a>
           </div>
         </div>
@@ -84,7 +92,7 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
       </div>
     </section>
 
-    <h1 style="text-align: center; margin-top: 6rem;">Series</h1>
+    <h1 style="text-align: center; margin-top: 4rem;">Series</h1>
     <p class="intro" style="text-align: center;">Photographic series and projects.</p>
 
     <div class="grid">
@@ -92,7 +100,7 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
           <a class="card" href={`/work/${s.slug}`}>
           <div class="thumb">
             <img 
-              src={cld(`${s.slug}_01`, s.slug, { width: 400, quality: "70" })} 
+              src={cld(`${s.slug}_01`, s.slug, { width: 1200, quality: "70" })} 
               alt={s.title} 
               loading="lazy"
               decoding="async"
@@ -162,8 +170,8 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
 
       .grid {
         display: grid;
-        gap: 1.5rem;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.1rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       }
 
       .card {
@@ -198,7 +206,7 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
       }
 
       .light-mode .overlay {
-        background: rgba(5, 6, 7, 0.35);
+        background: linear-gradient(180deg, rgba(5, 6, 7, 0) 35%, rgba(5, 6, 7, 0.55) 100%);
       }
 
       .light-mode .card:hover .overlay {
@@ -207,7 +215,7 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
 
       .thumb {
         position: relative;
-        aspect-ratio: 4 / 3;
+        aspect-ratio: 5 / 4;
         background: #0f1114;
         overflow: hidden;
       }
@@ -227,21 +235,28 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
       .overlay {
         position: absolute;
         inset: 0;
-        background: rgba(5, 6, 7, 0.35);
+        background: linear-gradient(180deg, rgba(5, 6, 7, 0) 35%, rgba(5, 6, 7, 0.7) 100%);
         display: flex;
         flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
+        align-items: flex-start;
+        justify-content: flex-end;
+        gap: 0.4rem;
+        padding: 1rem 1rem 1.1rem;
         transition: background 300ms ease;
       }
 
       .overlay h2 {
         color: var(--fg);
         margin: 0;
-        font-size: 1.2rem;
-        font-weight: 400;
-        text-align: center;
+        font-size: 1.05rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        text-align: left;
+        background: rgba(5, 6, 7, 0.6);
+        padding: 0.35rem 0.7rem;
+        border-radius: 999px;
+        text-shadow: 0 6px 16px rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(6px);
       }
 
       .light-mode .overlay h2 {
