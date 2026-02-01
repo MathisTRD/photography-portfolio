@@ -30,38 +30,11 @@ const currentPath = Astro.url.pathname
   </head>
 
   <body>
-    <header class="nav">
-      <nav class="nav-links">
-        <a href="/work" class={currentPath === '/work' || currentPath.startsWith('/work/') ? 'active' : ''}>Work</a>
-        <a href="/" class={currentPath === '/' ? 'active' : ''}>Home</a>
-      </nav>
-    </header>
-
     <slot />
 
     <footer>
       <p>&copy; 2026 Mathis Heck · <a href="/privacy">Privacy</a></p>
     </footer>
-
-    <script>
-      function updateActiveLink() {
-        const currentPath = window.location.pathname
-        const links = document.querySelectorAll('.nav-links a')
-        links.forEach(link => {
-          const href = link.getAttribute('href')
-          if (href === '/' && currentPath === '/') {
-            link.classList.add('active')
-          } else if (href !== '/' && (currentPath === href || currentPath.startsWith(href + '/'))) {
-            link.classList.add('active')
-          } else {
-            link.classList.remove('active')
-          }
-        })
-      }
-      
-      updateActiveLink()
-      document.addEventListener('astro:after-swap', updateActiveLink)
-    </script>
 
     <style>
   .container {

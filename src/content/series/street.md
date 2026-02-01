@@ -1,5 +1,5 @@
 ---
 title: Street
-description: Schnappschüsse aus dem Stadtaltag
+description: Everyday pictures 
 ---
 

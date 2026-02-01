@@ -2,7 +2,7 @@
 main {
   max-width: 1600px;
   margin: 0 auto;
-  padding: 6rem 3rem 5rem;
+  padding: 3rem 3rem 5rem;
 }
 
 h1 {
@@ -14,6 +14,76 @@ h1 {
 .intro {
   color: var(--muted);
   margin-bottom: 3rem;
+}
+
+.series-nav {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.5fr;
+  align-items: center;
+  gap: 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.series-header-content {
+  text-align: center;
+}
+
+.series-nav-link {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  text-decoration: none;
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+  background: rgba(245, 245, 247, 0.05);
+  font-size: 1.1rem;
+  position: relative;
+  gap: 0.6rem;
+  padding: 0.8rem 1.6rem;
+  width: auto;
+  min-width: 100px;
+}
+
+.series-nav-link:first-child {
+  justify-self: start;
+}
+
+.series-nav-link:last-child {
+  justify-self: end;
+}
+
+.series-nav-link:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent);
+  background: rgba(245, 245, 247, 0.12);
+}
+
+.series-nav-link span {
+  line-height: 1;
+}
+
+.series-nav-text {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+}
+
+.series-nav-link:hover .series-nav-text {
+  color: var(--fg);
+}
+
+
+
+@media (max-width: 640px) {
+  .series-nav-text {
+    display: none;
+  }
 }
 
 /* Portfolio Carousel */
@@ -164,7 +234,7 @@ h1 {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 1.4rem;
+  padding: 2rem;
   transition: background 160ms ease;
 }
 
@@ -180,16 +250,36 @@ h1 {
   margin-bottom: 0.3rem;
 }
 
+
+
 /* Work Detail Page */
 .header {
-  max-width: 800px;
-  margin: 0 0 3rem;
+  max-width: 1200px;
+  margin: 0 auto 3rem;
 }
+
+.home-link {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 1rem;
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: color 160ms ease;
+  text-align: center;
+}
+
+.home-link:hover {
+  color: var(--fg);
+}
+
+
 
 h1.detail-title {
   margin: 0 0 0.8rem;
   font-weight: 400;
   font-size: 2.8rem;
+  text-align: center;
 }
 
 .meta {
@@ -198,6 +288,7 @@ h1.detail-title {
   color: var(--muted);
   font-size: 0.95rem;
   margin-bottom: 1.2rem;
+  justify-content: center;
 }
 
 .description {
@@ -205,6 +296,8 @@ h1.detail-title {
   line-height: 1.6;
   font-size: 1.05rem;
   max-width: 60ch;
+  margin: 0 auto 2.5rem;
+  text-align: center;
 }
 
 @media (max-width: 900px) {
@@ -216,8 +309,17 @@ h1.detail-title {
     font-size: 2rem;
   }
 
+  h1.detail-title {
+    font-size: 1.8rem;
+  }
+
   .grid {
     gap: 1.2rem;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .home-link {
+    text-align: center;
+    width: 100%;
   }
 }

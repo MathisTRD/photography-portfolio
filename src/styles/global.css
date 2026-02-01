@@ -161,6 +161,9 @@ footer {
   }
 }
 
+/* Theme Toggle */
+
+
 @media (max-width: 900px) {
   header.nav {
     padding: 1rem 1.4rem;

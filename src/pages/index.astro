@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css'
 import '../styles/index.css'
+import '../styles/work.css'
 import { cld } from '../lib/cloudinary'
 import { getAllSeries } from '../lib/queries'
 import { ViewTransitions } from 'astro:transitions';
@@ -8,6 +9,7 @@ import { ViewTransitions } from 'astro:transitions';
 const heroImage = cld('landingpage_01', 'landingpage', { quality: '83' })
 const series = await getAllSeries()
 const featured = series.slice(0, 3)
+const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '75' })
 ---
 
 <!DOCTYPE html>
@@ -38,41 +40,242 @@ const featured = series.slice(0, 3)
       <div class="hero-image">
         <img src={heroImage} alt="Landing Image" loading="eager" />
       </div>
-      <div class="hero-copy">
-        <div class="eyebrow">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="location-icon">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-            <circle cx="12" cy="10" r="3"></circle>
-          </svg>
-          Trier
-        </div>
-        <h1>Mathis Heck</h1>
-        <p class="lede">20 years old, hobby photographer from Trier. <br> Astrophotography, street, and everything that catches my eye.</p>
-
-        <div class="tags">
-          <a href="mailto:kontakt@mathisheck.de" title="Email" class="icon-link">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-              <polyline points="22,6 12,13 2,6"></polyline>
+      <div class="hero-content">
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="location-icon">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
             </svg>
-          </a>
-          <a href="https://instagram.com/mattyy.tr" target="_blank" title="Instagram" class="icon-link">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-              <circle cx="17.5" cy="6.5" r="1.5"></circle>
-            </svg>
-          </a>
-        </div>
+            Trier
+          </div>
+          <h1>Mathis Heck</h1>
+          <p class="lede">20 years old, hobby photographer from Trier. <br> Astrophotography, street, and everything that catches my eye.</p>
 
-        <div>
-          <a class="cta" href="/work">Portfolio</a>
+          <div class="tags">
+            <a href="mailto:kontakt@mathisheck.de" title="Email" class="icon-link">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </a>
+            <a href="https://instagram.com/mattyy.tr" target="_blank" title="Instagram" class="icon-link">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                <circle cx="17.5" cy="6.5" r="1.5"></circle>
+              </svg>
+            </a>
+          </div>
+
+          <div>
+            <a class="cta" href="/all">All images</a>
+          </div>
+        </div>
+        <div class="hero-banner">
+          <img 
+            src={portfolioHeroImage} 
+            loading="eager"
+            decoding="async"
+            alt="Portfolio Hero" 
+            class="banner-image" 
+          />
         </div>
       </div>
     </section>
 
+    <h1 style="text-align: center; margin-top: 6rem;">Series</h1>
+    <p class="intro" style="text-align: center;">Photographic series and projects.</p>
+
+    <div class="grid">
+      {series.map((s) => (
+          <a class="card" href={`/work/${s.slug}`}>
+          <div class="thumb">
+            <img 
+              src={cld(`${s.slug}_01`, s.slug, { width: 400, quality: "70" })} 
+              alt={s.title} 
+              loading="lazy"
+              decoding="async"
+            />
+            <div class="overlay">
+              <h2>{s.title}</h2>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
     <footer>
       <p>&copy; 2026 Mathis Heck · <a href="/privacy">Privacy</a></p>
     </footer>
+
+    <style>
+      main {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 6rem 3rem 5rem;
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        font-weight: 400;
+        font-size: 2.4rem;
+      }
+
+      .intro {
+        color: var(--muted);
+        margin-bottom: 3rem;
+      }
+
+      .portfolio-section {
+        margin-bottom: 6rem;
+        padding-bottom: 6rem;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .hero-image-container {
+        width: 100%;
+        height: 300px;
+        margin: 0 auto;
+        background: #0f1114;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      .hero-image-container::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(5, 6, 7, 0) 0%, rgba(5, 6, 7, 0.3) 100%);
+        pointer-events: none;
+      }
+
+      .hero-portfolio-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        filter: saturate(1.05) contrast(1.02);
+      }
+
+      .grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: #0a0b0e;
+        border-radius: 18px;
+        overflow: hidden;
+        transition: border-color 160ms ease, transform 160ms ease;
+        text-decoration: none;
+      }
+
+      .card:hover {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .card:hover .overlay {
+        background: rgba(5, 6, 7, 0.45);
+      }
+
+      .light-mode .card {
+        background: #f5f5f5;
+        border-color: #ddd;
+      }
+
+      .light-mode .card:hover {
+        border-color: var(--accent);
+      }
+
+      .light-mode .thumb {
+        background: #f0f0f0;
+      }
+
+      .light-mode .overlay {
+        background: rgba(5, 6, 7, 0.35);
+      }
+
+      .light-mode .card:hover .overlay {
+        background: rgba(5, 6, 7, 0.5);
+      }
+
+      .thumb {
+        position: relative;
+        aspect-ratio: 4 / 3;
+        background: #0f1114;
+        overflow: hidden;
+      }
+
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 300ms ease;
+      }
+
+      .card:hover .thumb img {
+        transform: scale(1.05);
+      }
+
+      .overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(5, 6, 7, 0.35);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: background 300ms ease;
+      }
+
+      .overlay h2 {
+        color: var(--fg);
+        margin: 0;
+        font-size: 1.2rem;
+        font-weight: 400;
+        text-align: center;
+      }
+
+      .light-mode .overlay h2 {
+        color: #fff;
+      }
+
+      .year {
+        font-size: 0.85rem;
+        color: var(--muted);
+      }
+
+      .light-mode .year {
+        color: #e9e9e9;
+      }
+
+      @media (max-width: 768px) {
+        main {
+          padding: 3rem 1.5rem 2.5rem;
+        }
+
+        h1 {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+
+    <script>
+      const themeToggle = document.querySelector('.theme-toggle')
+      const html = document.documentElement
+
+      themeToggle?.addEventListener('click', () => {
+        const isLightMode = html.classList.toggle('light-mode')
+        localStorage.setItem('theme-mode', isLightMode ? 'light' : 'dark')
+      })
+    </script>
   </body>
 </html>

@@ -16,6 +16,12 @@ export async function getStaticPaths() {
 const { slug } = Astro.params
 const series = await getSeriesBySlug(slug!)
 const images = await getCloudinaryImages(slug!)
+// Shuffle images randomly
+const shuffledImages = [...images].sort(() => Math.random() - 0.5)
+const allSeries = await getAllSeries()
+const seriesIndex = allSeries.findIndex((s) => s.slug === slug)
+const prevSeries = allSeries[(seriesIndex - 1 + allSeries.length) % allSeries.length]
+const nextSeries = allSeries[(seriesIndex + 1) % allSeries.length]
 
 if (!series) {
   throw new Error(`Series not found for slug: ${slug}`)
@@ -26,11 +32,31 @@ if (!series) {
 
   <main>
     <div class="header">
-      <h1 class="detail-title">{series.title}</h1>
-      {series.year && <div class="meta"><span>{series.year}</span></div>}
-      {series.description && <p class="description">{series.description}</p>}
+      <a href="/" class="home-link">Home</a>
+      <div style="margin-top: 2rem;">
+        <div class="series-nav">
+          <a class="series-nav-link" href="/all" aria-label="All images" title="All images">
+            <span aria-hidden="true">←</span>
+            <span class="series-nav-text">All images</span>
+          </a>
+          <div class="series-header-content">
+            <h1 class="detail-title">{series.title}</h1>
+            {series.year && <div class="meta"><span>{series.year}</span></div>}
+            {series.description && <p class="description">{series.description}</p>}
+          </div>
+          <a
+            class="series-nav-link"
+            href={`/work/${nextSeries?.slug}`}
+            aria-label="Next series"
+            title="Next series"
+          >
+            <span class="series-nav-text">Next series</span>
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
     </div>
 
-    <Gallery images={images} slug={series.slug} />
+    <Gallery images={shuffledImages} slug={series.slug} />
   </main>
 </BaseLayout>
