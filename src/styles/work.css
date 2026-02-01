@@ -336,6 +336,6 @@ main:has(> section.gallery[data-all="true"]) h1.detail-title {
   }
 
   .description {
-    font-size: 0.95rem;
+    display: none;
   }
 }
