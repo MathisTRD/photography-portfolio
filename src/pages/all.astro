@@ -190,6 +190,38 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       lightboxImage.src = item.fullUrl
     }
 
+    // Basic touch swipe support for mobile
+    let touchStartX: number | null = null
+    let touchStartY: number | null = null
+
+    const swipeThreshold = 40 // min horizontal movement in px
+    const maxVerticalOffset = 60 // ignore mostly vertical swipes
+
+    lightbox?.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0]
+      touchStartX = touch.clientX
+      touchStartY = touch.clientY
+    })
+
+    lightbox?.addEventListener('touchend', (e) => {
+      if (touchStartX === null || touchStartY === null) return
+      const touch = e.changedTouches[0]
+      const dx = touch.clientX - touchStartX
+      const dy = touch.clientY - touchStartY
+
+      // Only react to mostly horizontal swipes
+      if (Math.abs(dx) > swipeThreshold && Math.abs(dy) < maxVerticalOffset) {
+        if (dx < 0) {
+          showNext()
+        } else {
+          showPrev()
+        }
+      }
+
+      touchStartX = null
+      touchStartY = null
+    })
+
     // Event listeners
     galleryImages.forEach((img, index) => {
       img.addEventListener('click', () => openLightbox(index))
