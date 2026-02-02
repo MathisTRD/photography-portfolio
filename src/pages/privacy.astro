@@ -5,47 +5,63 @@ import BaseLayout from '../layouts/BaseLayout.astro'
 
 <BaseLayout title="Privacy Policy · Mathis Heck" description="Privacy information for Mathis Heck photography portfolio">
   <main class="container privacy">
-    <h1>Privacy Policy</h1>
-    <p>This website is operated by Mathis Heck. I keep analytics lightweight and privacy-friendly.</p>
+    <div class="privacy-header">
+      <a href="/" class="home-link">Home</a>
+    </div>
+    <div class="privacy-box">
+      <h1>Privacy Policy</h1>
+      <p>This website is operated by Mathis Heck. I keep analytics lightweight and privacy-friendly.</p>
 
-    <section>
-      <h2>Responsible</h2>
-      <p>Mathis Heck · Trier · kontakt@mathisheck.de</p>
-    </section>
+      <section>
+        <h2>Responsible</h2>
+        <p>Mathis Heck · Trier · kontakt@mathisheck.de</p>
+      </section>
 
-    <section>
-      <h2>Analytics (Umami)</h2>
-      <ul>
-        <li>Self-hosted on my VPS.</li>
-        <li>No cookies, no local storage, no third-party sharing.</li>
-        <li>Collected metrics: page views, referrer, device/browser type, approximate region/country, timestamps.</li>
-        <li>IP addresses are anonymized; no personal profiles are created.</li>
-        <li>Legal basis: legitimate interest (Art. 6(1)(f) GDPR) in running a privacy-friendly website.</li>
-      </ul>
-    </section>
+      <section>
+        <h2>Analytics (Umami)</h2>
+        <ul>
+          <li>Self-hosted on my VPS.</li>
+          <li>No cookies, no local storage, no third-party sharing.</li>
+          <li>Collected metrics: page views, referrer, device/browser type, approximate region/country, timestamps.</li>
+          <li>IP addresses are anonymized; no personal profiles are created.</li>
+          <li>Legal basis: legitimate interest (Art. 6(1)(f) GDPR) in running a privacy-friendly website.</li>
+        </ul>
+      </section>
 
-    <section>
-      <h2>Hosting</h2>
-      <p>The site and analytics are hosted on my own server (VPS) in Frankfurt, Germany.</p>
-    </section>
+      <section>
+        <h2>Hosting</h2>
+        <p>The site and analytics are hosted on my own server (VPS) in Frankfurt, Germany.</p>
+      </section>
 
-    <section>
-      <h2>Data retention</h2>
-      <p>Analytics data is retained for up to 12 months for aggregate statistics and then deleted.</p>
-    </section>
+      <section>
+        <h2>Data retention</h2>
+        <p>Analytics data is retained for up to 12 months for aggregate statistics and then deleted.</p>
+      </section>
 
-    <section>
-      <h2>Your rights</h2>
-      <p>You can contact me at kontakt@mathisheck.de for access, deletion, or questions.</p>
-    </section>
+      <section>
+        <h2>Your rights</h2>
+        <p>You can contact me at kontakt@mathisheck.de for access, deletion, or questions.</p>
+      </section>
+    </div>
   </main>
 
   <style>
     .privacy {
-      max-width: 780px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 5rem 1.5rem 4rem;
+      padding: 2rem 1.5rem 4rem;
       text-align: center;
+    }
+
+    .privacy-header {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .privacy-box {
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 3rem 2.5rem;
+      border-radius: 4px;
     }
 
     .privacy h1 {

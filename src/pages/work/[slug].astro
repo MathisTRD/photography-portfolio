@@ -61,5 +61,83 @@ if (!series) {
     </div>
 
     <Gallery images={shuffledImages} slug={series.slug} />
+
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
   </main>
 </BaseLayout>
+
+<style is:global>
+  .back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(245, 245, 247, 0.15);
+    border: 2px solid rgba(245, 245, 247, 0.4);
+    color: var(--fg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms ease;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 999;
+  }
+
+  .back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .back-to-top:hover {
+    background: rgba(245, 245, 247, 0.25);
+    border-color: rgba(245, 245, 247, 0.6);
+    transform: translateX(-50%) translateY(-6px);
+    box-shadow: 0 8px 24px rgba(245, 245, 247, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    .back-to-top {
+      bottom: 1.5rem;
+      width: 52px;
+      height: 52px;
+    }
+  }
+</style>
+
+<script>
+  function setupBackToTop() {
+    const backToTopBtn = document.getElementById('back-to-top') as HTMLButtonElement
+
+    if (!backToTopBtn) return
+
+    function updateBackToTopVisibility() {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('visible')
+      } else {
+        backToTopBtn.classList.remove('visible')
+      }
+    }
+
+    window.addEventListener('scroll', updateBackToTopVisibility)
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    })
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupBackToTop)
+  } else {
+    setupBackToTop()
+  }
+
+  document.addEventListener('astro:after-swap', setupBackToTop)
+</script>

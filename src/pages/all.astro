@@ -15,22 +15,19 @@ const allImagesWithSlugs = await Promise.all(
   })
 )
 
-// Flatten array
-const allImages = allImagesWithSlugs.flat()
-
-// Shuffle all images so series are mixed
-const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
+// Flatten array without shuffling - shuffling will happen on client
+const flatImages = allImagesWithSlugs.flat()
+const allImages = flatImages
 ---
 
 <BaseLayout title="All Images · Mathis Heck" description="All photographs by Mathis Heck">
   <main>
     <div class="header">
       <a href="/" class="home-link">Home</a>
-
     </div>
 
     <section class="gallery" data-all="true">
-      {shuffledAllImages.map((item, index) => (
+      {allImages.map((item, index) => (
         <figure class="gallery-item">
           <img
             src={cld(item.id, item.slug, { width: 400, quality: 'auto' })}
@@ -68,21 +65,31 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
         </svg>
       </button>
     </div>
+
+    <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="18 15 12 9 6 15"></polyline>
+      </svg>
+    </button>
   </main>
 </BaseLayout>
 
 <script>
-  function removeAllImagesHeading() {
-    const headings = Array.from(document.querySelectorAll('h1')) as HTMLHeadingElement[]
-    headings.forEach((h) => {
-      if (h.textContent?.trim() === 'All Images') {
-        h.remove()
-      }
-    })
-  }
-
   function setupGallery() {
-    removeAllImagesHeading()
+    // Shuffle gallery items on client side for every page load
+    const gallery = document.querySelector('.gallery') as HTMLElement
+    const galleryItems = Array.from(gallery?.querySelectorAll('.gallery-item') || [])
+    
+    // Fisher-Yates shuffle algorithm
+    for (let i = galleryItems.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [galleryItems[i], galleryItems[j]] = [galleryItems[j], galleryItems[i]]
+    }
+    
+    // Reorder items in DOM
+    galleryItems.forEach((item) => {
+      gallery?.appendChild(item)
+    })
 
     const galleryImages = document.querySelectorAll('.gallery-image')
     const lightbox = document.getElementById('lightbox')
@@ -91,6 +98,7 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
     const closeBtn = document.querySelector('.lightbox-close')
     const prevBtn = document.querySelector('.lightbox-prev')
     const nextBtn = document.querySelector('.lightbox-next')
+    const backToTopBtn = document.getElementById('back-to-top') as HTMLButtonElement
     
     let currentIndex = 0
     const allImages: Array<{ id: string, slug: string, fullUrl: string, thumbUrl: string }> = []
@@ -101,6 +109,20 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       const fullUrl = img.getAttribute('data-full-url')!
       const thumbUrl = img.getAttribute('data-thumb-url')!
       allImages.push({ id: imageId, slug: imageSlug, fullUrl, thumbUrl })
+    })
+
+    // Back to top functionality
+    function updateBackToTopVisibility() {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('visible')
+      } else {
+        backToTopBtn.classList.remove('visible')
+      }
+    }
+
+    window.addEventListener('scroll', updateBackToTopVisibility)
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
     })
 
     function getThumbUrl(item: any): string {
@@ -114,6 +136,7 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       
       lightbox?.classList.add('active')
       document.body.style.overflow = 'hidden'
+      document.body.style.touchAction = 'none'
       
       // Show blur placeholder immediately
       lightboxBlur.src = item.thumbUrl
@@ -140,6 +163,7 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
     function closeLightbox() {
       lightbox?.classList.remove('active')
       document.body.style.overflow = ''
+      document.body.style.touchAction = ''
     }
 
     function showNext() {
@@ -186,72 +210,6 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
         loader.style.display = 'none'
       }
       lightboxImage.src = item.fullUrl
-    }
-
-    // Simple touch swipe support for mobile (on the image itself)
-    let touchStartX: number | null = null
-    let touchStartY: number | null = null
-
-    const swipeThreshold = 20 // min horizontal movement in px
-    const maxVerticalOffset = 80 // ignore mostly vertical swipes
-
-    lightboxImage?.addEventListener('touchstart', (e) => {
-      const touch = e.touches[0]
-      touchStartX = touch.clientX
-      touchStartY = touch.clientY
-    })
-
-    lightboxImage?.addEventListener('touchend', (e) => {
-      if (touchStartX === null || touchStartY === null) return
-
-      const touch = e.changedTouches[0]
-      const dx = touch.clientX - touchStartX
-      const dy = touch.clientY - touchStartY
-
-      // Only react to mostly horizontal swipes
-      if (Math.abs(dx) > swipeThreshold && Math.abs(dy) < maxVerticalOffset) {
-        if (dx < 0) {
-          showNext()
-        } else {
-          showPrev()
-        }
-      }
-
-      touchStartX = null
-      touchStartY = null
-    })
-
-    // Desktop: click left/right side of image for prev/next
-    if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
-      lightboxImage?.addEventListener('click', (e: MouseEvent) => {
-        const rect = lightboxImage.getBoundingClientRect()
-        const x = e.clientX - rect.left
-        if (x < rect.width / 2) {
-          showPrev()
-        } else {
-          showNext()
-        }
-      })
-
-      // Desktop: click regions around the image
-      lightbox?.addEventListener('click', (e: MouseEvent) => {
-        if (!lightboxImage) return
-        const rect = lightboxImage.getBoundingClientRect()
-        const { clientX, clientY } = e
-
-        // If click is above or below the image, close lightbox
-        if (clientY < rect.top || clientY > rect.bottom) {
-          closeLightbox()
-          return
-        }
-
-        // If click is left or right outside the image, go prev/next
-        if (clientX < rect.left) {
-          showPrev()
-        } else if (clientX > rect.right) {
-          showNext()
-        }
-      })
     }
 
     // Event listeners
@@ -304,26 +262,15 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      removeAllImagesHeading()
-      setupGallery()
-    })
+    document.addEventListener('DOMContentLoaded', setupGallery)
   } else {
-    removeAllImagesHeading()
     setupGallery()
   }
 
-  document.addEventListener('astro:after-swap', () => {
-    removeAllImagesHeading()
-    setupGallery()
-  })
+  document.addEventListener('astro:after-swap', setupGallery)
 </script>
 
-<style is:global>
-  h1.detail-title {
-    display: none !important;
-  }
-
+<style>
   .gallery {
     display: grid;
     gap: 1rem;
@@ -403,7 +350,6 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    cursor: pointer;
   }
 
   #lightbox-image,
@@ -481,9 +427,58 @@ const shuffledAllImages = [...allImages].sort(() => Math.random() - 0.5)
       gap: 0.5rem;
     }
 
-    /* On mobile we hide the desktop arrow buttons, swipe is enough */
     .lightbox-arrow {
-      display: none;
+      width: 40px;
+      height: 40px;
+    }
+
+    .lightbox-prev {
+      left: 1rem;
+    }
+
+    .lightbox-next {
+      right: 1rem;
+    }
+  }
+
+  .back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(245, 245, 247, 0.15);
+    border: 2px solid rgba(245, 245, 247, 0.4);
+    color: var(--fg);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 200ms ease;
+    opacity: 0;
+    visibility: hidden;
+    z-index: 999;
+  }
+
+  .back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .back-to-top:hover {
+    background: rgba(245, 245, 247, 0.25);
+    border-color: rgba(245, 245, 247, 0.6);
+    transform: translateX(-50%) translateY(-6px);
+    box-shadow: 0 8px 24px rgba(245, 245, 247, 0.15);
+  }
+
+  @media (max-width: 768px) {
+    .back-to-top {
+      bottom: 1.5rem;
+      width: 52px;
+      height: 52px;
     }
   }
 </style>
