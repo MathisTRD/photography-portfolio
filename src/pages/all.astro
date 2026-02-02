@@ -75,21 +75,30 @@ const allImages = flatImages
 </BaseLayout>
 
 <script>
+  let isShuffled = false
+
   function setupGallery() {
-    // Shuffle gallery items on client side for every page load
-    const gallery = document.querySelector('.gallery') as HTMLElement
-    const galleryItems = Array.from(gallery?.querySelectorAll('.gallery-item') || [])
-    
-    // Fisher-Yates shuffle algorithm
-    for (let i = galleryItems.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [galleryItems[i], galleryItems[j]] = [galleryItems[j], galleryItems[i]]
+    // Shuffle gallery items on client side for every page load (only once)
+    if (!isShuffled) {
+      const gallery = document.querySelector('.gallery') as HTMLElement
+      if (gallery) {
+        const galleryItems = Array.from(gallery.children)
+        
+        // Fisher-Yates shuffle algorithm
+        for (let i = galleryItems.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [galleryItems[i], galleryItems[j]] = [galleryItems[j], galleryItems[i]]
+        }
+        
+        // Clear and reorder items in DOM
+        gallery.innerHTML = ''
+        galleryItems.forEach((item) => {
+          gallery.appendChild(item)
+        })
+        
+        isShuffled = true
+      }
     }
-    
-    // Reorder items in DOM
-    galleryItems.forEach((item) => {
-      gallery?.appendChild(item)
-    })
 
     const galleryImages = document.querySelectorAll('.gallery-image')
     const lightbox = document.getElementById('lightbox')
