@@ -6,6 +6,10 @@ export interface ImageTransformOptions {
   format?: string
 }
 
+function normalizePublicId(id: string): string {
+  return id.replace(/\.[a-z0-9]+$/i, '')
+}
+
 // Get responsive width based on connection speed
 export function getResponsiveWidth(baseWidth: number): number {
   if (typeof navigator === 'undefined') return baseWidth
@@ -23,8 +27,7 @@ export function getResponsiveWidth(baseWidth: number): number {
 }
 
 export function cld(id: string, slug: string, options?: ImageTransformOptions) {
-  // Wenn die ID schon eine Endung hat, nicht doppelt anhängen
-  const file = id.includes('.') ? id : `${id}.webp`
+  const file = normalizePublicId(id)
   
   // Cloudinary-Transformationen für Performance
   const transforms = []
@@ -45,7 +48,7 @@ export function cld(id: string, slug: string, options?: ImageTransformOptions) {
 
 // Generate blur-up thumbnail
 export function getCldThumb(id: string, slug: string): string {
-  const file = id.includes('.') ? id : `${id}.webp`
+  const file = normalizePublicId(id)
   // Small, blurred placeholder
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/w_50,h_50,q_auto,f_webp,e_blur:300/portfolio/${slug}/${file}`
 }
@@ -90,11 +93,8 @@ export async function getCloudinaryImages(slug: string): Promise<string[]> {
     const data = (await response.json()) as any
     const images = (data.resources || [])
       .filter((r: any) => r.resource_type === 'image')
-      .map((r: any) => {
-        const name = (r.public_id || '').split('/').pop() || r.filename || ''
-        const ext = r.format ? `.${r.format}` : '.webp'
-        return name.endsWith(ext) ? name : `${name}${ext}`
-      })
+      .map((r: any) => (r.public_id || '').split('/').pop() || r.filename || '')
+      .map((name: string) => normalizePublicId(name))
       .filter(Boolean)
       .sort()
 

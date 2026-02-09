@@ -19,6 +19,7 @@ const { images, slug } = Astro.props
         decoding="async"
         alt=""
         data-index={index}
+        data-id={id}
         class="gallery-image"
       />
     </figure>
@@ -223,10 +224,7 @@ const { images, slug } = Astro.props
     // Sammle alle Bilder aus den data-index Attributen
     const updateAllImages = () => {
       allImages = Array.from(document.querySelectorAll('.gallery-image'))
-        .map((img) => {
-          const imageId = (img as HTMLImageElement).src.split('/').pop()?.split('?')[0] || ''
-          return imageId
-        })
+        .map((img) => (img as HTMLImageElement).dataset.id || '')
         .filter(Boolean)
     }
     
