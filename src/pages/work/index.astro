@@ -3,9 +3,15 @@ import '../../styles/global.css'
 import '../../styles/work.css'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 import { getAllSeries } from '../../lib/queries'
-import { cld } from '../../lib/cloudinary'
+import { cld, getCloudinaryImages } from '../../lib/cloudinary'
 
 const series = await getAllSeries()
+const seriesWithPreview = await Promise.all(
+  series.map(async (s) => {
+    const images = await getCloudinaryImages(s.slug)
+    return { ...s, previewId: images[0] ?? null }
+  })
+)
 const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '75' })
 ---
 
@@ -34,15 +40,19 @@ const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '
     <p class="intro" style="text-align: center;">Photographic series and projects.</p>
 
     <div class="grid">
-      {series.map((s) => (
+      {seriesWithPreview.map((s) => (
           <a class="card" href={`/work/${s.slug}`}>
           <div class="thumb">
-            <img 
-              src={cld(`${s.slug}_01`, s.slug, { width: 400, quality: "70" })} 
-              alt={s.title} 
-              loading="lazy"
-              decoding="async"
-            />
+            {s.previewId ? (
+              <img 
+                src={cld(s.previewId, s.slug, { width: 400, quality: "70" })} 
+                alt={s.title} 
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div class="thumb-placeholder" aria-hidden="true"></div>
+            )}
             <div class="overlay">
               {s.year && <div class="year">{s.year}</div>}
               <h2>{s.title}</h2>
@@ -90,6 +100,12 @@ const heroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '
 
   .card .thumb img {
     transition: transform 300ms ease;
+  }
+
+  .thumb-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #0f1114 0%, #050607 100%);
   }
 
   .card:hover .thumb img {

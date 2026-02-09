@@ -2,13 +2,19 @@
 import '../styles/global.css'
 import '../styles/index.css'
 import '../styles/work.css'
-import { cld } from '../lib/cloudinary'
+import { cld, getCloudinaryImages } from '../lib/cloudinary'
 import { getAllSeries } from '../lib/queries'
 import { ViewTransitions } from 'astro:transitions';
 
 const heroImage = cld('landingpage_01', 'landingpage', { quality: '83' })
 const series = await getAllSeries()
-const featured = series.slice(0, 3)
+const seriesWithPreview = await Promise.all(
+  series.map(async (s) => {
+    const images = await getCloudinaryImages(s.slug)
+    return { ...s, previewId: images[0] ?? null }
+  })
+)
+const featured = seriesWithPreview.slice(0, 3)
 const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, quality: '75' })
 ---
 
@@ -96,15 +102,19 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
     <p class="intro" style="text-align: center;">Photographic series and projects.</p>
 
     <div class="grid">
-      {series.map((s) => (
+      {seriesWithPreview.map((s) => (
           <a class="card" href={`/work/${s.slug}`}>
           <div class="thumb">
-            <img 
-              src={cld(`${s.slug}_01`, s.slug, { width: 1200, quality: "70" })} 
-              alt={s.title} 
-              loading="lazy"
-              decoding="async"
-            />
+            {s.previewId ? (
+              <img 
+                src={cld(s.previewId, s.slug, { width: 1200, quality: "70" })} 
+                alt={s.title} 
+                loading="lazy"
+                decoding="async"
+              />
+            ) : (
+              <div class="thumb-placeholder" aria-hidden="true"></div>
+            )}
             <div class="overlay">
               <h2>{s.title}</h2>
             </div>
@@ -218,6 +228,12 @@ const portfolioHeroImage = cld('landingpage_04', 'landingpage', { width: 1200, q
         aspect-ratio: 5 / 4;
         background: #0f1114;
         overflow: hidden;
+      }
+
+      .thumb-placeholder {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #0f1114 0%, #050607 100%);
       }
 
       .thumb img {
