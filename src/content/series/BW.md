@@ -1,4 +1,4 @@
 ---
-title: BlackAndWhite
+title: Black & White
 ---
 
